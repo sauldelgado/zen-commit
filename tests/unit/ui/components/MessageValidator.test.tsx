@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'ink-testing-library';
-import { MessageValidator } from '@ui/components';
+import MessageValidator from '../../../../src/ui/components/MessageValidator';
 
 describe('MessageValidator Component', () => {
   it('should display character count for subject and body', () => {

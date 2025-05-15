@@ -105,6 +105,7 @@
     "lint-staged": "^16.0.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
+    "react-test-renderer": "^18.3.1",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",

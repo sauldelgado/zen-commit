@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { useMessageValidation } from '@ui/hooks';
+import { useMessageValidation } from '../../../../src/ui/hooks/useMessageValidation';
 
 describe('useMessageValidation Hook', () => {
   it('should validate general commit message formatting', () => {
