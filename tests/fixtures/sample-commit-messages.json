@@ -1,0 +1,23 @@
+{
+  "conventional": [
+    "feat(ui): add new button component",
+    "fix(core): resolve memory leak issue",
+    "docs: update API documentation",
+    "style: format code according to project standards",
+    "refactor(auth): simplify login process",
+    "test: add unit tests for parser",
+    "chore: update dependencies"
+  ],
+  "nonConventional": [
+    "Initial commit",
+    "Update README file",
+    "Fixed the thing that was broken",
+    "More changes",
+    "WIP: still working on this"
+  ],
+  "invalid": [
+    "",
+    "     ",
+    "no message"
+  ]
+}
