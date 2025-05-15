@@ -11,6 +11,9 @@ export { default as DiffView } from './DiffView';
 export { default as FileDiffList } from './FileDiffList';
 export { default as CommitMessageInput } from './CommitMessageInput';
 export { default as MessageValidator } from './MessageValidator';
+export { default as QualityIndicator } from './QualityIndicator';
+export { default as ValidationSummary } from './ValidationSummary';
+export { default as CharacterCounter } from './CharacterCounter';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -26,3 +29,6 @@ export type { DiffViewProps } from './DiffView';
 export type { FileDiffListProps } from './FileDiffList';
 export type { CommitMessageInputProps } from './CommitMessageInput';
 export type { MessageValidatorProps } from './MessageValidator';
+export type { QualityIndicatorProps } from './QualityIndicator';
+export type { ValidationSummaryProps } from './ValidationSummary';
+export type { CharacterCounterProps } from './CharacterCounter';

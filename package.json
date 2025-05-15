@@ -36,7 +36,8 @@
     "file-categories-demo": "ts-node src/examples/file-categories-demo.tsx",
     "file-categories-test": "ts-node src/examples/file-categories-test.tsx",
     "diff-view-demo": "ts-node src/examples/diff-view-demo.tsx",
-    "message-validation-demo": "ts-node src/examples/message-validation-demo.tsx"
+    "message-validation-demo": "ts-node src/examples/message-validation-demo.tsx",
+    "visual-feedback-demo": "ts-node src/examples/visual-feedback-demo.tsx"
   },
   "repository": {
     "type": "git",
