@@ -1,19 +1,12 @@
-import chalk from 'chalk';
-import { 
-  generalHelp, 
-  commitHelp, 
-  configHelp, 
-  initHelp, 
-  versionText 
-} from './help-content';
+import { generalHelp, commitHelp, configHelp, initHelp, versionText } from './help-content';
 import { Command } from './types';
+import chalk from '../utils/chalk-wrapper';
 
 /**
  * Get the package version from package.json
  */
 const getVersion = (): string => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pkg = require('../../package.json');
     return pkg.version || '0.0.0';
   } catch (error) {
@@ -28,22 +21,25 @@ const getVersion = (): string => {
  */
 export const formatHelpText = (text: string): string => {
   // Apply various formatting transformations to make help text more readable
-  
+
   // Format command names
   let formatted = text.replace(/([^\s]+)(?=\s+Create a |\s+Get and set|:\s+)/g, chalk.cyan('$1'));
-  
+
   // Format option flags
   formatted = formatted.replace(/(-[^\s,]+|--[^\s]+)/g, chalk.green('$1'));
-  
+
   // Format sections
-  formatted = formatted.replace(/^(Usage|Commands|Options|Examples|Actions):/gm, chalk.yellow('$1:'));
-  
+  formatted = formatted.replace(
+    /^(Usage|Commands|Options|Examples|Actions):/gm,
+    chalk.yellow('$1:'),
+  );
+
   // Format URLs
   formatted = formatted.replace(/(https?:\/\/[^\s]+)/g, chalk.blue('$1'));
-  
+
   // Format numbered list indicators
   formatted = formatted.replace(/^(\s*)(\d+\.)/gm, `$1${chalk.yellow('$2')}`);
-  
+
   return formatted;
 };
 

@@ -46,9 +46,21 @@ export interface InitOptions extends GlobalOptions {
 }
 
 /**
+ * Options for the help command
+ */
+export interface HelpOptions extends GlobalOptions {
+  command?: Command; // Command to get help for
+}
+
+/**
  * Union type for all command options
  */
-export type CommandOptions = CommitOptions | ConfigOptions | InitOptions | GlobalOptions;
+export type CommandOptions =
+  | CommitOptions
+  | ConfigOptions
+  | InitOptions
+  | HelpOptions
+  | GlobalOptions;
 
 /**
  * Result of command parsing

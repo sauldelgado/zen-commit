@@ -1,5 +1,12 @@
 import { Command as CommanderCommand } from 'commander';
-import { ParseResult, CommitOptions, ConfigOptions, Command, CommandOptions } from './types';
+import {
+  ParseResult,
+  CommitOptions,
+  ConfigOptions,
+  Command,
+  CommandOptions,
+  HelpOptions,
+} from './types';
 
 /**
  * Get the package version from package.json
@@ -102,10 +109,9 @@ export const parseArguments = (argv: string[]): ParseResult => {
       .argument('[command]', 'Command to get help for')
       .action((command) => {
         result.command = 'help';
-        result.options = {
-          ...result.options,
-          command,
-        };
+        const helpOptions = result.options as HelpOptions;
+        helpOptions.command = command as Command;
+        result.options = helpOptions;
       });
 
     // Version command (explicit, Commander already handles --version)
@@ -193,10 +199,11 @@ export const parseArguments = (argv: string[]): ParseResult => {
 export const executeCommand = async (command: Command, options: CommandOptions): Promise<void> => {
   // Import locally to avoid circular dependencies
   const { getCommandHelp, getGeneralHelp, getVersionInfo, displayHelp } = require('./help-system');
-  
+
   switch (command) {
     case 'help': {
-      const helpCommand = options.command as Command | undefined;
+      const helpOptions = options as HelpOptions;
+      const helpCommand = helpOptions.command;
       if (helpCommand) {
         displayHelp(getCommandHelp(helpCommand));
       } else {
