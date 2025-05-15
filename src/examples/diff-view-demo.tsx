@@ -40,12 +40,12 @@ const DiffViewDemo = () => {
   );
 };
 
-// For demonstration purposes, we use the App component directly
-const DemoApp = () => (
-  <App>
-    <DiffViewDemo />
-  </App>
-);
+// This is how we would define a demo app component
+// const DemoApp = () => (
+//   <App>
+//     <DiffViewDemo />
+//   </App>
+// );
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
@@ -56,7 +56,7 @@ if (require.main === module) {
 
     // We would normally render the component here, but
     // rendering might be problematic in some environments
-    console.log('Demo initialized successfully - <DemoApp /> ready');
+    console.log('Demo initialized successfully');
   } catch (error) {
     console.error('Error running diff view demo:', error);
   }
