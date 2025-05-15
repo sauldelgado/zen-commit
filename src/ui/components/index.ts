@@ -7,6 +7,8 @@ export { default as Divider } from './Divider';
 export { default as StagedFilesList } from './StagedFilesList';
 export { default as FileCategories } from './FileCategories';
 export { default as FileChangeFilters } from './FileChangeFilters';
+export { default as DiffView } from './DiffView';
+export { default as FileDiffList } from './FileDiffList';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -18,3 +20,5 @@ export type { DividerProps } from './Divider';
 export type { StagedFilesListProps } from './StagedFilesList';
 export type { FileCategoriesProps, Category } from './FileCategories';
 export type { FileChangeFiltersProps } from './FileChangeFilters';
+export type { DiffViewProps } from './DiffView';
+export type { FileDiffListProps } from './FileDiffList';
