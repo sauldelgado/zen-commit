@@ -38,7 +38,13 @@
     "diff-view-demo": "ts-node src/examples/diff-view-demo.tsx",
     "message-validation-demo": "ts-node src/examples/message-validation-demo.tsx",
     "visual-feedback-demo": "ts-node src/examples/visual-feedback-demo.tsx",
-    "ink-render-demo": "ts-node src/examples/ink-render-demo.tsx"
+    "ink-render-demo": "ts-node src/examples/ink-render-demo.tsx",
+    "pure-ink-demo": "node src/examples/pure-ink-demo.js",
+    "direct-ink-demo": "node src/examples/direct-ink-demo.js",
+    "esm-ink-demo": "node src/examples/esm-ink-demo.mjs",
+    "basic-ink-demo": "node src/examples/basic-ink-demo.js",
+    "combined-ink-demo": "node src/examples/combined-ink-demo.js",
+    "simple-ink-demo": "node src/examples/simple-ink-demo.js"
   },
   "repository": {
     "type": "git",
