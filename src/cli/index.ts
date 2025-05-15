@@ -1,11 +1,13 @@
-export { parseArguments } from './command-parser';
+export { parseArguments, executeCommand } from './command-parser';
 export {
   Command,
   GlobalOptions,
   CommitOptions,
   ConfigOptions,
   InitOptions,
+  HelpOptions,
   CommandOptions,
 } from './types';
 
-// Export other CLI-related functions as they're created
+// Export help system functions
+export { getGeneralHelp, getCommandHelp, getVersionInfo, displayHelp } from './help-system';

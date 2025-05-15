@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { parseArguments } from './cli';
+import { parseArguments, executeCommand } from './cli';
 
 /**
  * Main entry point for the application
@@ -16,9 +16,8 @@ const main = async (): Promise<void> => {
     console.log('Options:', options);
   }
 
-  // This is just a temporary implementation
-  // In future steps, we'll properly dispatch to command handlers
-  console.log(`Zen Commit - Running '${command}' command`);
+  // Execute the command
+  await executeCommand(command, options);
 };
 
 // Run the application
