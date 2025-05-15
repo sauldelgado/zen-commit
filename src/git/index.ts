@@ -7,4 +7,15 @@ export {
   validateRepository,
 } from './repository';
 
-// Export other git-related functions as they are created
+export { createGitOperations, GitError, GitErrorType } from './operations';
+
+export type { GitOperations } from './operations';
+
+export type {
+  GitStatus,
+  GitFileStatus,
+  GitChangeType,
+  CommitResult,
+  CommitOptions,
+  StageOptions,
+} from './types';
