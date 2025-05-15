@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-// Mock render function
+// We'll need to use a mock render function for now
 const render = (_element: React.ReactElement, _options = {}) => {
   return {
     unmount: () => {},
@@ -33,6 +33,13 @@ const App: React.FC<AppProps> = ({ children, theme }) => {
  * @returns The render instance
  */
 export const renderApp = (element: React.ReactElement, _onExit?: () => void) => {
+  // Use mock render for now
+  // In a real implementation, we would use ink's render:
+  // return inkRender(element, {
+  //   exitOnCtrlC: true,
+  //   patchConsole: false,
+  //   onExit
+  // });
   return render(element, {});
 };
 

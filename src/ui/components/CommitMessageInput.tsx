@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// Create a mock TextInput component
+// We'll need to keep the mock TextInput for now
 const TextInput = (props: any) => {
   return React.createElement('input', props, null);
 };
