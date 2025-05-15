@@ -14,6 +14,10 @@ module.exports = {
     '^@git/(.*)$': '<rootDir>/src/git/$1',
     '^@ui/(.*)$': '<rootDir>/src/ui/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    'ink-testing-library': '<rootDir>/tests/mocks/ink-testing-library.js',
+    'ink': '<rootDir>/tests/mocks/ink.js',
+    'ink-text-input': '<rootDir>/tests/mocks/ink-text-input.js',
+    'ink-select-input': '<rootDir>/tests/mocks/ink-select-input.js',
   },
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**', '!**/dist/**'],
   coverageThreshold: {
