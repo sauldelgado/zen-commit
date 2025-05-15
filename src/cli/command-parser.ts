@@ -1,5 +1,5 @@
 import { Command as CommanderCommand } from 'commander';
-import { ParseResult, CommitOptions, ConfigOptions } from './types';
+import { ParseResult, CommitOptions, ConfigOptions, Command, CommandOptions } from './types';
 
 /**
  * Get the package version from package.json
@@ -99,9 +99,13 @@ export const parseArguments = (argv: string[]): ParseResult => {
     program
       .command('help')
       .description('Display help information')
-      .action(() => {
+      .argument('[command]', 'Command to get help for')
+      .action((command) => {
         result.command = 'help';
-        // Just showing help is handled by Commander
+        result.options = {
+          ...result.options,
+          command,
+        };
       });
 
     // Version command (explicit, Commander already handles --version)
@@ -178,5 +182,33 @@ export const parseArguments = (argv: string[]): ParseResult => {
       },
       args: [],
     };
+  }
+};
+
+/**
+ * Execute a command with the given options
+ * @param command The command to execute
+ * @param options Command options
+ */
+export const executeCommand = async (command: Command, options: CommandOptions): Promise<void> => {
+  // Import locally to avoid circular dependencies
+  const { getCommandHelp, getGeneralHelp, getVersionInfo, displayHelp } = require('./help-system');
+  
+  switch (command) {
+    case 'help': {
+      const helpCommand = options.command as Command | undefined;
+      if (helpCommand) {
+        displayHelp(getCommandHelp(helpCommand));
+      } else {
+        displayHelp(getGeneralHelp());
+      }
+      break;
+    }
+    case 'version':
+      displayHelp(getVersionInfo());
+      break;
+    // Other commands will be handled in future steps
+    default:
+      console.log(`Command '${command}' not yet implemented`);
   }
 };
