@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Text, Spinner, FileDiffList } from '../ui/components';
 import { useGitChanges } from '../ui/hooks';
 import App, { renderApp } from '../ui/App';
-import { render } from 'ink';
 
 const DiffViewDemo = () => {
   // Get current Git repo path (using process.cwd() for demo)
