@@ -9,6 +9,7 @@ export { default as FileCategories } from './FileCategories';
 export { default as FileChangeFilters } from './FileChangeFilters';
 export { default as DiffView } from './DiffView';
 export { default as FileDiffList } from './FileDiffList';
+export { default as CommitMessageInput } from './CommitMessageInput';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -22,3 +23,4 @@ export type { FileCategoriesProps, Category } from './FileCategories';
 export type { FileChangeFiltersProps } from './FileChangeFilters';
 export type { DiffViewProps } from './DiffView';
 export type { FileDiffListProps } from './FileDiffList';
+export type { CommitMessageInputProps } from './CommitMessageInput';
