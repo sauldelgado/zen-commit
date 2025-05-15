@@ -44,7 +44,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.2.1 | Commit message input field          | Completed   | [#13](https://github.com/sauldelgado/zen-commit/pull/13) |
 | 2     | 2.2.2 | Character count and validation      | Completed   | [#14](https://github.com/sauldelgado/zen-commit/pull/14) |
 | 2     | 2.2.3 | Visual feedback system              | In Progress | [#15](https://github.com/sauldelgado/zen-commit/pull/15) |
-| 2     | 2.2.4 | Ink rendering implementation        | Not Started |                                                          |
+| 2     | 2.2.4 | Ink rendering implementation        | In Progress | [#17](https://github.com/sauldelgado/zen-commit/pull/17) |
 | 2     | 2.3.1 | Confirmation dialog                 | Not Started |                                                          |
 | 2     | 2.3.2 | Error handling system               | Not Started |                                                          |
 | 2     | 2.3.3 | Success feedback UI                 | Not Started |                                                          |
