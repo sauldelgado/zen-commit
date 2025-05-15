@@ -32,7 +32,9 @@
     "ui-demo": "ts-node src/examples/ui-demo.tsx",
     "git-demo": "ts-node src/examples/git-operations-demo.ts",
     "change-demo": "ts-node src/examples/change-detection-demo.ts",
-    "staged-files-demo": "ts-node src/examples/staged-files-demo.tsx"
+    "staged-files-demo": "ts-node src/examples/staged-files-demo.tsx",
+    "file-categories-demo": "ts-node src/examples/file-categories-demo.tsx",
+    "file-categories-test": "ts-node src/examples/file-categories-test.tsx"
   },
   "repository": {
     "type": "git",

@@ -5,6 +5,8 @@ export { default as Select } from './Select';
 export { default as Spinner } from './Spinner';
 export { default as Divider } from './Divider';
 export { default as StagedFilesList } from './StagedFilesList';
+export { default as FileCategories } from './FileCategories';
+export { default as FileChangeFilters } from './FileChangeFilters';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -14,3 +16,5 @@ export type { SelectProps } from './Select';
 export type { SpinnerProps } from './Spinner';
 export type { DividerProps } from './Divider';
 export type { StagedFilesListProps } from './StagedFilesList';
+export type { FileCategoriesProps, Category } from './FileCategories';
+export type { FileChangeFiltersProps } from './FileChangeFilters';
