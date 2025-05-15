@@ -1,15 +1,14 @@
 import React from 'react';
 import { Box, Text, Spinner, StagedFilesList } from '../ui/components';
 import { useGitChanges } from '../ui/hooks';
-import { render } from 'ink';
-import { ThemeProvider } from '../ui/ThemeProvider';
+import { App, renderApp } from '../ui/App';
 
 const StagedFilesDemo = () => {
   // Get current Git repo path (using process.cwd() for demo)
   const repoPath = process.cwd();
 
   // Use the Git changes hook
-  const { changes, loading, error, refreshChanges } = useGitChanges(repoPath);
+  const { changes, loading, error } = useGitChanges(repoPath);
 
   if (error) {
     return (
@@ -45,11 +44,7 @@ const StagedFilesDemo = () => {
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
-  render(
-    <ThemeProvider>
-      <StagedFilesDemo />
-    </ThemeProvider>,
-  );
+  renderApp(<App><StagedFilesDemo /></App>);
 }
 
 export default StagedFilesDemo;
