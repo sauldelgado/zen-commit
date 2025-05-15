@@ -1,0 +1,9 @@
+This file documents the structure of Git repository fixtures for tests.
+
+/test-git-repo/
+├── .git/                # Standard Git directory
+├── src/                 # Source code
+│   ├── index.js         # Main file
+│   └── utils.js         # Utilities
+├── README.md            # Documentation
+└── package.json         # Project metadata
