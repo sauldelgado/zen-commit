@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, Spinner, StagedFilesList } from '../ui/components';
 import { useGitChanges } from '../ui/hooks';
-import { App, renderApp } from '../ui/App';
+import App, { renderApp } from '../ui/App';
 
 const StagedFilesDemo = () => {
   // Get current Git repo path (using process.cwd() for demo)
@@ -41,6 +41,8 @@ const StagedFilesDemo = () => {
     </Box>
   );
 };
+
+// Demo script for staged files listing
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
