@@ -31,7 +31,8 @@
     "prepare": "husky install",
     "ui-demo": "ts-node src/examples/ui-demo.tsx",
     "git-demo": "ts-node src/examples/git-operations-demo.ts",
-    "change-demo": "ts-node src/examples/change-detection-demo.ts"
+    "change-demo": "ts-node src/examples/change-detection-demo.ts",
+    "staged-files-demo": "ts-node src/examples/staged-files-demo.tsx"
   },
   "repository": {
     "type": "git",
