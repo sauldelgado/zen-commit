@@ -28,7 +28,8 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
     "format": "prettier --write 'src/**/*.{js,ts,tsx}'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ui-demo": "ts-node src/examples/ui-demo.tsx"
   },
   "repository": {
     "type": "git",
