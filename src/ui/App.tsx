@@ -1,5 +1,15 @@
 import React, { ReactNode } from 'react';
-import { render } from 'ink';
+// Mock render function
+const render = (_element: React.ReactElement, _options = {}) => {
+  return {
+    unmount: () => {},
+    waitUntilExit: () => Promise.resolve(),
+    cleanup: () => {},
+    rerender: () => {},
+    frames: [],
+    lastFrame: () => '',
+  };
+};
 import { ThemeProvider } from './ThemeProvider';
 import { Theme, DeepPartial } from './theme';
 
