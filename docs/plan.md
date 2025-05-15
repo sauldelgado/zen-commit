@@ -43,7 +43,8 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.1.3 | Basic diff visualization            | Completed   | [#12](https://github.com/sauldelgado/zen-commit/pull/12) |
 | 2     | 2.2.1 | Commit message input field          | Completed   | [#13](https://github.com/sauldelgado/zen-commit/pull/13) |
 | 2     | 2.2.2 | Character count and validation      | Completed   | [#14](https://github.com/sauldelgado/zen-commit/pull/14) |
-| 2     | 2.2.3 | Visual feedback system              | Not Started |                                                          |
+| 2     | 2.2.3 | Visual feedback system              | In Progress | [#15](https://github.com/sauldelgado/zen-commit/pull/15) |
+| 2     | 2.2.4 | Ink rendering implementation        | Not Started |                                                          |
 | 2     | 2.3.1 | Confirmation dialog                 | Not Started |                                                          |
 | 2     | 2.3.2 | Error handling system               | Not Started |                                                          |
 | 2     | 2.3.3 | Success feedback UI                 | Not Started |                                                          |
@@ -176,6 +177,11 @@ This phase implements the main user experience of Zen Commit.
       - Color-coded validation
       - Formatting suggestions
       - Completion indicators
+      
+   4. **Ink rendering implementation** [details in `docs/steps/2.2.4-ink-rendering-implementation.md`]
+      - Real terminal rendering
+      - Text input compatibility
+      - Interactive components
    
 3. **Commit Submission**
    1. **Confirmation dialog** [details in `docs/steps/2.3.1-confirmation-dialog.md`]
