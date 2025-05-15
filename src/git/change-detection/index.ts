@@ -153,6 +153,88 @@ function determineChangeType(filePath: string, _staged: boolean): ChangeType {
   return 'modified';
 }
 
+/**
+ * Get detailed diff for a file
+ * @param repoPath Path to the Git repository
+ * @param filePath Path to the file
+ * @param staged Whether to get diff for staged changes
+ * @returns Parsed diff information
+ */
+export async function getFileDiff(
+  repoPath: string,
+  filePath: string,
+  staged = false,
+): Promise<FileDiff | null> {
+  const git = simpleGit(repoPath);
+
+  try {
+    // Handle binary files
+    const isBinary = await checkIsBinary(repoPath, filePath);
+
+    if (isBinary) {
+      return {
+        filePath,
+        insertions: 0,
+        deletions: 0,
+        binary: true,
+        hunks: [],
+      };
+    }
+
+    // Get diff
+    const diffOptions = ['--patch'];
+
+    if (staged) {
+      diffOptions.push('--staged');
+    }
+
+    // For a specific file
+    diffOptions.push('--', filePath);
+
+    const diffOutput = await git.diff(diffOptions);
+
+    if (!diffOutput.trim()) {
+      // No changes
+      return {
+        filePath,
+        insertions: 0,
+        deletions: 0,
+        binary: false,
+        hunks: [],
+      };
+    }
+
+    // Parse the diff
+    const fileDiffs = parseGitDiff(diffOutput);
+
+    // Return the first (and should be only) file diff
+    return fileDiffs[0] || null;
+  } catch (error) {
+    console.error(`Error getting diff for ${filePath}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Check if a file is binary
+ * @param repoPath Path to the Git repository
+ * @param filePath Path to the file
+ * @returns Whether the file is binary
+ */
+async function checkIsBinary(repoPath: string, filePath: string): Promise<boolean> {
+  try {
+    const git = simpleGit(repoPath);
+
+    // Use git-check-attr to determine if a file is binary
+    const result = await git.raw(['check-attr', 'binary', '--', filePath]);
+
+    return result.includes('binary: set');
+  } catch (error) {
+    // If unable to determine, assume it's not binary
+    return false;
+  }
+}
+
 // Export the utility functions
 export { categorizeChanges, getChangeStats, getFileType, parseGitDiff };
 
