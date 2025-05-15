@@ -39,7 +39,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 1     | 1.3.2 | Git operations interface            | Completed   | [#8](https://github.com/sauldelgado/zen-commit/pull/8) |
 | 1     | 1.3.3 | Change status detection             | Completed   | [#9](https://github.com/sauldelgado/zen-commit/pull/9) |
 | 2     | 2.1.1 | Staged files listing                | Completed   | [#10](https://github.com/sauldelgado/zen-commit/pull/10) |
-| 2     | 2.1.2 | File categorization                 | Not Started |                                                        |
+| 2     | 2.1.2 | File categorization                 | Completed   | [#11](https://github.com/sauldelgado/zen-commit/pull/11) |
 | 2     | 2.1.3 | Basic diff visualization            | Not Started |                                                        |
 | 2     | 2.2.1 | Commit message input field          | Not Started |                                                        |
 | 2     | 2.2.2 | Character count and validation      | Not Started |                                                        |
