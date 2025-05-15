@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import TextInput from 'ink-text-input';
+// Create a mock TextInput component
+const TextInput = (props: any) => {
+  return React.createElement('input', props, null);
+};
 import { Box, Text } from './';
 import MessageValidator from './MessageValidator';
 import ValidationSummary from './ValidationSummary';
