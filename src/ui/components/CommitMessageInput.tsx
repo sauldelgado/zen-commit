@@ -5,6 +5,10 @@ const TextInput = (props: any) => {
 };
 import { Box, Text } from './';
 import MessageValidator from './MessageValidator';
+import ValidationSummary from './ValidationSummary';
+import QualityIndicator from './QualityIndicator';
+import CharacterCounter from './CharacterCounter';
+import { useMessageValidation } from '../hooks/useMessageValidation';
 
 export interface CommitMessageInputProps {
   value: string;
@@ -16,6 +20,8 @@ export interface CommitMessageInputProps {
   conventionalCommit?: boolean;
   showValidation?: boolean;
   showSuggestions?: boolean;
+  showFeedback?: boolean;
+  feedbackExpanded?: boolean;
 }
 
 /**
@@ -31,8 +37,17 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   conventionalCommit = false,
   showValidation = true,
   showSuggestions = false,
+  showFeedback = false,
+  feedbackExpanded = false,
 }) => {
   const [focusedField, setFocusedField] = useState<'subject' | 'body'>('subject');
+
+  // Get validation result
+  const validation = useMessageValidation(value, {
+    conventionalCommit,
+    provideSuggestions: showSuggestions,
+    subjectLengthLimit: subjectLimit,
+  });
 
   const lines = value.split('\n');
   const subject = lines[0] || '';
@@ -69,6 +84,26 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
         <Box marginBottom={1}>
           <Text bold>Commit message:</Text>
         </Box>
+
+        {/* Real-time feedback above input */}
+        {showFeedback && (
+          <Box marginBottom={1}>
+            <QualityIndicator score={validation.qualityScore} label="Quality" width={6} />
+
+            {validation.isSubjectTooLong && (
+              <Box marginLeft={2}>
+                <Text color="red">Subject too long</Text>
+              </Box>
+            )}
+
+            {conventionalCommit && !validation.isConventionalCommit && (
+              <Box marginLeft={2}>
+                <Text color="red">Not conventional format</Text>
+              </Box>
+            )}
+          </Box>
+        )}
+
         <TextInput
           value={value}
           onChange={onChange}
@@ -79,12 +114,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
         {/* Add validation if enabled */}
         {showValidation && (
           <Box marginTop={1} flexDirection="column">
-            <MessageValidator
-              message={value}
-              conventionalCommit={conventionalCommit}
-              showSuggestions={showSuggestions}
-              subjectLengthLimit={subjectLimit}
-            />
+            {showFeedback ? (
+              <ValidationSummary validation={validation} expanded={feedbackExpanded} />
+            ) : (
+              <MessageValidator
+                message={value}
+                conventionalCommit={conventionalCommit}
+                showSuggestions={showSuggestions}
+                subjectLengthLimit={subjectLimit}
+              />
+            )}
           </Box>
         )}
 
@@ -97,13 +136,24 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
 
   return (
     <Box flexDirection="column" marginY={1}>
-      <Box marginBottom={1}>
+      <Box marginBottom={1} flexDirection="row">
         <Text bold>Subject:</Text>
-        {isSubjectTooLong && (
-          <Text color="yellow">
-            {' '}
-            (Subject line too long: {subject.length}/{subjectLimit})
-          </Text>
+
+        {showFeedback ? (
+          <Box marginLeft={2}>
+            <CharacterCounter
+              current={subject.length}
+              limit={subjectLimit}
+              showWarning={isSubjectTooLong}
+            />
+          </Box>
+        ) : (
+          isSubjectTooLong && (
+            <Text color="yellow">
+              {' '}
+              (Subject line too long: {subject.length}/{subjectLimit})
+            </Text>
+          )
         )}
       </Box>
 
@@ -141,12 +191,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
       {/* Add validation if enabled */}
       {showValidation && (
         <Box marginTop={1} flexDirection="column">
-          <MessageValidator
-            message={value}
-            conventionalCommit={conventionalCommit}
-            showSuggestions={showSuggestions}
-            subjectLengthLimit={subjectLimit}
-          />
+          {showFeedback ? (
+            <ValidationSummary validation={validation} expanded={feedbackExpanded} />
+          ) : (
+            <MessageValidator
+              message={value}
+              conventionalCommit={conventionalCommit}
+              showSuggestions={showSuggestions}
+              subjectLengthLimit={subjectLimit}
+            />
+          )}
         </Box>
       )}
 
