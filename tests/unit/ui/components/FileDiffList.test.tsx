@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'ink-testing-library';
 import { FileDiffList } from '../../../../src/ui/components';
-import { FileChange, getFileDiff } from '../../../../src/git/change-detection';
+import { FileChange } from '../../../../src/git/change-detection';
 
 // Mock the ink-testing-library
 jest.mock('ink-testing-library', () => ({
@@ -67,8 +67,7 @@ describe('FileDiffList Component', () => {
     // Using a delay to allow the async operations to complete
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    // Since we're mocking the ink-testing-library, we don't need to check getFileDiff calls
-    // The component itself will call getFileDiff when rendered
+    // Component is rendered, since we're using a mock we don't need to check actual API calls
   });
 
   it('should handle empty changes array', () => {
