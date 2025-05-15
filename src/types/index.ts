@@ -10,7 +10,7 @@ export interface CommandOptions {
 }
 
 /**
- * Git repository information 
+ * Git repository information
  */
 export interface GitRepository {
   isRepository: boolean;
