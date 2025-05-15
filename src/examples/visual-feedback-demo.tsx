@@ -1,25 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Text, CommitMessageInput } from '../ui/components';
-import { useInput } from 'ink';
 import App, { renderApp } from '../ui/App';
 
 const VisualFeedbackDemo = () => {
   const [message, setMessage] = useState('');
-  const [conventionalCommit, setConventionalCommit] = useState(false);
-  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
-
-  // Toggle settings
-  const toggleConventional = () => setConventionalCommit(!conventionalCommit);
-  const toggleExpanded = () => setFeedbackExpanded(!feedbackExpanded);
-
-  // Mock useInput hook for the demo
-  useInput((input, key) => {
-    if (input === 'c') {
-      toggleConventional();
-    } else if (input === 'e') {
-      toggleExpanded();
-    }
-  });
+  // For simplicity in the demo, we'll set these to true
+  const conventionalCommit = true;
+  const feedbackExpanded = true;
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -28,18 +15,12 @@ const VisualFeedbackDemo = () => {
       <Box marginY={1} flexDirection="column">
         <Box>
           <Text>Conventional Format: </Text>
-          <Text color={conventionalCommit ? 'green' : 'red'}>
-            {conventionalCommit ? 'Enabled' : 'Disabled'}
-          </Text>
-          <Text dimColor> (Press 'c' to toggle)</Text>
+          <Text color="green">Enabled</Text>
         </Box>
 
         <Box>
           <Text>Expanded Feedback: </Text>
-          <Text color={feedbackExpanded ? 'green' : 'red'}>
-            {feedbackExpanded ? 'Enabled' : 'Disabled'}
-          </Text>
-          <Text dimColor> (Press 'e' to toggle)</Text>
+          <Text color="green">Enabled</Text>
         </Box>
       </Box>
 
