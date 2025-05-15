@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text, CommitMessageInput } from '../ui/components';
 import { useInput } from 'ink';
-
-// Import the App components from the UI package
-// In a real application, we would import from the index
-// but for this demo, we're directly importing the mock implementations
-const App = ({ children }: { children: React.ReactNode }) => (
-  <Box padding={1} flexDirection="column">
-    {children}
-  </Box>
-);
-
-const renderApp = (component: React.ReactElement) => {
-  console.log('Rendering demo application...');
-  console.log(component);
-};
+import App, { renderApp } from '../ui/App';
 
 const VisualFeedbackDemo = () => {
   const [message, setMessage] = useState('');
