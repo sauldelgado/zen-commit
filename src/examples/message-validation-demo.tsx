@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Text, CommitMessageInput } from '../ui/components';
-import { render } from 'ink';
+import App, { renderApp } from '../ui/App';
 
 const MessageValidationDemo = () => {
   const [message, setMessage] = useState('');
@@ -50,7 +50,11 @@ const MessageValidationDemo = () => {
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
-  render(<MessageValidationDemo />);
+  renderApp(
+    <App>
+      <MessageValidationDemo />
+    </App>,
+  );
 }
 
 export default MessageValidationDemo;
