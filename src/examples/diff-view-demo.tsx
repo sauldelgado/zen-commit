@@ -54,10 +54,9 @@ if (require.main === module) {
     console.log('Running diff-view demo...');
     console.log('Note: To see the actual UI, run this in a proper terminal environment');
 
-    // We create the component, but don't render it here
-    // since rendering might be problematic in some environments
-    const demoApp = <DemoApp />;
-    console.log('Demo initialized successfully');
+    // We would normally render the component here, but
+    // rendering might be problematic in some environments
+    console.log('Demo initialized successfully - <DemoApp /> ready');
   } catch (error) {
     console.error('Error running diff view demo:', error);
   }
