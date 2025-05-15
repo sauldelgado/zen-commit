@@ -14,10 +14,14 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "start": "ts-node src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
     "format": "prettier --write 'src/**/*.{js,ts,tsx}'",
@@ -41,6 +45,14 @@
     "url": "https://github.com/sauldelgado/zen-commit/issues"
   },
   "homepage": "https://github.com/sauldelgado/zen-commit#readme",
+  "_moduleAliases": {
+    "@": "dist",
+    "@cli": "dist/cli",
+    "@core": "dist/core",
+    "@git": "dist/git",
+    "@ui": "dist/ui",
+    "@utils": "dist/utils"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -57,6 +69,7 @@
     "ink-select-input": "^6.2.0",
     "ink-text-input": "^6.0.0",
     "meow": "^13.2.0",
+    "module-alias": "^2.2.3",
     "react": "^18.3.1",
     "simple-git": "^3.27.0"
   },
@@ -77,6 +90,7 @@
     "lint-staged": "^16.0.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
