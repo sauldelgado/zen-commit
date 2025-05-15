@@ -41,7 +41,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.1.1 | Staged files listing                | Completed   | [#10](https://github.com/sauldelgado/zen-commit/pull/10) |
 | 2     | 2.1.2 | File categorization                 | Completed   | [#11](https://github.com/sauldelgado/zen-commit/pull/11) |
 | 2     | 2.1.3 | Basic diff visualization            | Completed   | [#12](https://github.com/sauldelgado/zen-commit/pull/12) |
-| 2     | 2.2.1 | Commit message input field          | Not Started |                                                          |
+| 2     | 2.2.1 | Commit message input field          | Completed   | [#13](https://github.com/sauldelgado/zen-commit/pull/13) |
 | 2     | 2.2.2 | Character count and validation      | Not Started |                                                          |
 | 2     | 2.2.3 | Visual feedback system              | Not Started |                                                          |
 | 2     | 2.3.1 | Confirmation dialog                 | Not Started |                                                          |
