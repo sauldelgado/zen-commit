@@ -32,7 +32,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 1     | 1.1.1 | Project scaffolding                 | Completed   | [#1](https://github.com/sauldelgado/zen-commit/pull/1) |
 | 1     | 1.1.2 | TypeScript configuration            | Completed   | [#2](https://github.com/sauldelgado/zen-commit/pull/2) |
 | 1     | 1.1.3 | Testing framework setup             | Completed   | [#3](https://github.com/sauldelgado/zen-commit/pull/3) |
-| 1     | 1.2.1 | Command argument parser             | In Progress |                                                        |
+| 1     | 1.2.1 | Command argument parser             | Completed   | [#4](https://github.com/sauldelgado/zen-commit/pull/4) |
 | 1     | 1.2.2 | Help documentation system           | Not Started |                                                        |
 | 1     | 1.2.3 | Base UI component library           | Not Started |                                                        |
 | 1     | 1.3.1 | Git repository detection            | Not Started |                                                        |
