@@ -1,13 +1,13 @@
 import React, { ReactNode } from 'react';
-import { ThemeProvider as InkThemeProvider } from 'ink';
-import { theme } from '../../src/ui/theme';
+import { defaultTheme } from '../../src/ui/theme';
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
+// Simple ThemeProvider mock for tests
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  return <InkThemeProvider theme={theme}>{children}</InkThemeProvider>;
+  return <>{children}</>; // Just render children without any theme context
 };
 
 export default ThemeProvider;
