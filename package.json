@@ -1,0 +1,84 @@
+{
+  "name": "zen-commit",
+  "version": "0.1.0",
+  "description": "A mindful Git commit experience for developers who care about clarity, intention, and craftsmanship",
+  "author": "Saul Delgado",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "bin": {
+    "zen-commit": "./bin/zen-commit"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "start": "ts-node src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint 'src/**/*.{js,ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
+    "format": "prettier --write 'src/**/*.{js,ts,tsx}'",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sauldelgado/zen-commit.git"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "cli",
+    "terminal",
+    "productivity"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/sauldelgado/zen-commit/issues"
+  },
+  "homepage": "https://github.com/sauldelgado/zen-commit#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "ink": "^5.2.1",
+    "ink-select-input": "^6.2.0",
+    "ink-text-input": "^6.0.0",
+    "meow": "^13.2.0",
+    "react": "^18.3.1",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "@types/ink": "^0.5.2",
+    "@types/ink-select-input": "^3.0.5",
+    "@types/ink-text-input": "^2.0.5",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.18",
+    "@types/react": "^19.1.4",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "husky": "^8.0.0",
+    "jest": "^29.7.0",
+    "lint-staged": "^16.0.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "ts-jest": "^29.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
