@@ -1,9 +1,7 @@
 import React from 'react';
 import { Box, Text, Spinner, FileDiffList } from '../ui/components';
 import { useGitChanges } from '../ui/hooks';
-import { App } from '../ui/App';
-
-// Import required modules to support rendering
+import App, { renderApp } from '../ui/App';
 import { render } from 'ink';
 
 const DiffViewDemo = () => {
@@ -11,7 +9,7 @@ const DiffViewDemo = () => {
   const repoPath = process.cwd();
 
   // Use the Git changes hook
-  const { changes, loading, error, refreshChanges } = useGitChanges(repoPath);
+  const { changes, loading, error } = useGitChanges(repoPath);
 
   if (error) {
     return (
@@ -43,21 +41,13 @@ const DiffViewDemo = () => {
   );
 };
 
-// Function to render the app
-function renderApp() {
-  const { unmount } = render(
+// Render the demo when this file is executed directly
+if (require.main === module) {
+  renderApp(
     <App>
       <DiffViewDemo />
     </App>,
   );
-
-  // Return the unmount function for cleanup
-  return unmount;
-}
-
-// Render the demo when this file is executed directly
-if (require.main === module) {
-  renderApp();
 }
 
 export default DiffViewDemo;
