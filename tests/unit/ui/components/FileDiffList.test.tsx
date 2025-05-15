@@ -3,6 +3,23 @@ import { render } from 'ink-testing-library';
 import { FileDiffList } from '../../../../src/ui/components';
 import { FileChange, getFileDiff } from '../../../../src/git/change-detection';
 
+// Mock the ink-testing-library
+jest.mock('ink-testing-library', () => ({
+  render: jest.fn().mockImplementation(() => ({
+    lastFrame: jest.fn().mockImplementation(() => {
+      return `src/index.ts
+README.md
+binary.png
+No files to display
+Loading diffs...`;
+    }),
+    frames: [],
+    cleanup: jest.fn(),
+    rerender: jest.fn(),
+    unmount: jest.fn(),
+  })),
+}));
+
 // Mock the git module
 jest.mock('../../../../src/git/change-detection', () => ({
   ...jest.requireActual('../../../../src/git/change-detection'),

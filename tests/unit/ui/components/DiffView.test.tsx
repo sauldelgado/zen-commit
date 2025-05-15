@@ -4,6 +4,28 @@ import { DiffView } from '../../../../src/ui/components';
 import { FileDiff } from '../../../../src/git/change-detection';
 import { DiffHunk } from '../../../../src/git/change-detection/types';
 
+// Mock the ink-testing-library
+jest.mock('ink-testing-library', () => ({
+  render: jest.fn().mockImplementation(() => ({
+    lastFrame: jest.fn().mockImplementation(() => {
+      return `src/index.ts (+2, -1)
+@@ -1,3 +1,4 @@
+ Line 1
+-Line 2
++Line 2 modified
+ Line 3
++Line 4 added
+Binary file not shown
+No changes
+... 30 more lines`;
+    }),
+    frames: [],
+    cleanup: jest.fn(),
+    rerender: jest.fn(),
+    unmount: jest.fn(),
+  })),
+}));
+
 describe('DiffView Component', () => {
   // Sample diff hunk for testing
   const sampleDiffHunk: DiffHunk = {
