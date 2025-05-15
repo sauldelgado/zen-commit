@@ -4,6 +4,7 @@ const TextInput = (props: any) => {
   return React.createElement('input', props, null);
 };
 import { Box, Text } from './';
+import MessageValidator from './MessageValidator';
 
 export interface CommitMessageInputProps {
   value: string;
@@ -12,6 +13,9 @@ export interface CommitMessageInputProps {
   showSubjectBodySeparation?: boolean;
   subjectLimit?: number;
   onSubmit?: (value: string) => void;
+  conventionalCommit?: boolean;
+  showValidation?: boolean;
+  showSuggestions?: boolean;
 }
 
 /**
@@ -24,6 +28,9 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   showSubjectBodySeparation = false,
   subjectLimit = 50,
   onSubmit,
+  conventionalCommit = false,
+  showValidation = true,
+  showSuggestions = false,
 }) => {
   const [focusedField, setFocusedField] = useState<'subject' | 'body'>('subject');
 
@@ -68,6 +75,19 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
           placeholder={placeholder}
           onSubmit={handleSubmit}
         />
+
+        {/* Add validation if enabled */}
+        {showValidation && (
+          <Box marginTop={1} flexDirection="column">
+            <MessageValidator
+              message={value}
+              conventionalCommit={conventionalCommit}
+              showSuggestions={showSuggestions}
+              subjectLengthLimit={subjectLimit}
+            />
+          </Box>
+        )}
+
         <Box marginTop={1}>
           <Text dimColor>Press Enter to submit, Esc to cancel</Text>
         </Box>
@@ -115,6 +135,18 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
       ) : (
         <Box>
           <Text>{body || <Text dimColor>No body</Text>}</Text>
+        </Box>
+      )}
+
+      {/* Add validation if enabled */}
+      {showValidation && (
+        <Box marginTop={1} flexDirection="column">
+          <MessageValidator
+            message={value}
+            conventionalCommit={conventionalCommit}
+            showSuggestions={showSuggestions}
+            subjectLengthLimit={subjectLimit}
+          />
         </Box>
       )}
 

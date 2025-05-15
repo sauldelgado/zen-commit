@@ -35,7 +35,8 @@
     "staged-files-demo": "ts-node src/examples/staged-files-demo.tsx",
     "file-categories-demo": "ts-node src/examples/file-categories-demo.tsx",
     "file-categories-test": "ts-node src/examples/file-categories-test.tsx",
-    "diff-view-demo": "ts-node src/examples/diff-view-demo.tsx"
+    "diff-view-demo": "ts-node src/examples/diff-view-demo.tsx",
+    "message-validation-demo": "ts-node src/examples/message-validation-demo.tsx"
   },
   "repository": {
     "type": "git",
@@ -86,6 +87,7 @@
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/ink": "^0.5.2",
     "@types/ink-select-input": "^3.0.5",
     "@types/ink-text-input": "^2.0.5",
@@ -103,6 +105,7 @@
     "lint-staged": "^16.0.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
+    "react-test-renderer": "^18.3.1",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",
