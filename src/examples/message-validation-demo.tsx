@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Text, CommitMessageInput } from '../ui/components';
-import { render } from 'ink';
+import { createApp } from 'ink';
 
 const MessageValidationDemo = () => {
   const [message, setMessage] = useState('');
   const [conventionalCommit, setConventionalCommit] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
-
-  // Toggle settings
-  const toggleConventional = () => setConventionalCommit(!conventionalCommit);
-  const toggleSuggestions = () => setShowSuggestions(!showSuggestions);
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -21,7 +17,6 @@ const MessageValidationDemo = () => {
           <Text color={conventionalCommit ? 'green' : 'red'}>
             {conventionalCommit ? 'Enabled' : 'Disabled'}
           </Text>
-          <Text dimColor> (Press 'c' to toggle)</Text>
         </Box>
 
         <Box>
@@ -29,7 +24,6 @@ const MessageValidationDemo = () => {
           <Text color={showSuggestions ? 'green' : 'red'}>
             {showSuggestions ? 'Enabled' : 'Disabled'}
           </Text>
-          <Text dimColor> (Press 's' to toggle)</Text>
         </Box>
       </Box>
 
@@ -56,7 +50,8 @@ const MessageValidationDemo = () => {
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
-  render(<MessageValidationDemo />);
+  const { waitUntilExit } = createApp(<MessageValidationDemo />);
+  waitUntilExit();
 }
 
 export default MessageValidationDemo;
