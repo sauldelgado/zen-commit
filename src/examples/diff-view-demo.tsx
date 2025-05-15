@@ -42,7 +42,10 @@ const DiffViewDemo = () => {
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
-  renderApp(
+  // Use ink's render directly to ensure output to terminal
+  const { render } = require('ink');
+
+  render(
     <App>
       <DiffViewDemo />
     </App>,
