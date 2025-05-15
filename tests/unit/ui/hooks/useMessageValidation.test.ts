@@ -6,7 +6,7 @@ describe('useMessageValidation Hook', () => {
     const { result } = renderHook(() => useMessageValidation('This is a test commit message', {}));
 
     expect(result.current.isValid).toBe(true);
-    expect(result.current.subjectLength).toBe(30);
+    expect(result.current.subjectLength).toBe(29);
     expect(result.current.hasBody).toBe(false);
   });
 

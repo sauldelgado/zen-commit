@@ -1,11 +1,14 @@
 import React from 'react';
 import { render } from 'ink-testing-library';
 import MessageValidator from '../../../../src/ui/components/MessageValidator';
+import ThemeProvider from '../../../../tests/mocks/ThemeProvider';
 
 describe('MessageValidator Component', () => {
   it('should display character count for subject and body', () => {
     const { lastFrame } = render(
-      <MessageValidator message="feat: add new feature\n\nThis is a detailed description of the feature." />,
+      <ThemeProvider>
+        <MessageValidator message="feat: add new feature\n\nThis is a detailed description of the feature." />
+      </ThemeProvider>,
     );
 
     // Check that character counts are displayed
@@ -15,7 +18,9 @@ describe('MessageValidator Component', () => {
 
   it('should display warnings for long subject line', () => {
     const { lastFrame } = render(
-      <MessageValidator message="feat: this is a very long subject line that exceeds the recommended length for good commit messages" />,
+      <ThemeProvider>
+        <MessageValidator message="feat: this is a very long subject line that exceeds the recommended length for good commit messages" />
+      </ThemeProvider>,
     );
 
     // Check that warning is displayed
@@ -24,7 +29,11 @@ describe('MessageValidator Component', () => {
   });
 
   it('should validate conventional commit format when enabled', () => {
-    const { lastFrame } = render(<MessageValidator message="add new feature" conventionalCommit />);
+    const { lastFrame } = render(
+      <ThemeProvider>
+        <MessageValidator message="add new feature" conventionalCommit />
+      </ThemeProvider>,
+    );
 
     // Check that validation error is displayed
     expect(lastFrame()).toContain('Not a conventional commit');
@@ -32,7 +41,9 @@ describe('MessageValidator Component', () => {
 
   it('should recognize valid conventional commit format', () => {
     const { lastFrame } = render(
-      <MessageValidator message="feat(ui): add new button component" conventionalCommit />,
+      <ThemeProvider>
+        <MessageValidator message="feat(ui): add new button component" conventionalCommit />
+      </ThemeProvider>,
     );
 
     // Check that validation is successful
@@ -40,7 +51,11 @@ describe('MessageValidator Component', () => {
   });
 
   it('should provide suggestions for improving commit message', () => {
-    const { lastFrame } = render(<MessageValidator message="fix bug" showSuggestions />);
+    const { lastFrame } = render(
+      <ThemeProvider>
+        <MessageValidator message="fix bug" showSuggestions />
+      </ThemeProvider>,
+    );
 
     // Check that suggestions are displayed
     expect(lastFrame()).toContain('Suggestions');
