@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Text, CommitMessageInput } from '../ui/components';
-import { createApp } from 'ink';
+import { render } from 'ink';
 
 const MessageValidationDemo = () => {
   const [message, setMessage] = useState('');
-  const [conventionalCommit, setConventionalCommit] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [conventionalCommit] = useState(false);
+  const [showSuggestions] = useState(true);
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -50,8 +50,7 @@ const MessageValidationDemo = () => {
 
 // Render the demo when this file is executed directly
 if (require.main === module) {
-  const { waitUntilExit } = createApp(<MessageValidationDemo />);
-  waitUntilExit();
+  render(<MessageValidationDemo />);
 }
 
 export default MessageValidationDemo;
