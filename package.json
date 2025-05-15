@@ -49,7 +49,10 @@
     "esm-ink-demo": "node src/examples/esm-ink-demo.mjs",
     "basic-ink-demo": "node src/examples/basic-ink-demo.js",
     "combined-ink-demo": "node src/examples/combined-ink-demo.js",
-    "simple-ink-demo": "node src/examples/simple-ink-demo.js"
+    "simple-ink-demo": "node src/examples/simple-ink-demo.js",
+    "simple-direct-demo": "node src/examples/simple-direct-demo.js",
+    "ink-minimal-demo": "ts-node src/examples/ink-minimal-demo.tsx",
+    "ink-direct": "node src/examples/ink-direct.js"
   },
   "repository": {
     "type": "git",

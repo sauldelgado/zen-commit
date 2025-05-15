@@ -13,9 +13,15 @@
 
     // Import our components
     // We need to use require for our own components
-    const components = require('../ui/components');
+    // Use path.resolve to get absolute paths to modules
+    const path = require('path');
+    const componentsPath = path.resolve(__dirname, '../ui/components/index.ts');
+    const themeProviderPath = path.resolve(__dirname, '../ui/ThemeProvider.tsx');
+
+    // Use dynamic require
+    const components = require(componentsPath);
     const { Box, Text, CommitMessageInput } = components;
-    const ThemeProvider = require('../ui/ThemeProvider').ThemeProvider;
+    const ThemeProvider = require(themeProviderPath).ThemeProvider;
 
     // Demo component using our UI components
     const VisualFeedbackDemo = () => {
