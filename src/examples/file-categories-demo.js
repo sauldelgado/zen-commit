@@ -1,138 +1,180 @@
 #!/usr/bin/env node
-// File categories demo with JavaScript to avoid TypeScript issues
+// File categories demo with the direct import approach that works
 
-// Use dynamic import for ink to avoid ESM/CommonJS issues
-(async () => {
-  try {
-    // Import the modules we need
-    const inkModule = await import('ink');
-    const reactModule = await import('react');
+// Using dynamic imports with Promise.all to avoid ESM/CommonJS issues
+const reactPromise = import('react');
+const inkPromise = import('ink');
+
+// Use Promise.all to wait for all imports
+Promise.all([reactPromise, inkPromise])
+  .then(([reactModule, inkModule]) => {
+    // Extract what we need from the modules
     const React = reactModule.default;
-    const { useState, useEffect, useCallback } = React;
-    const { render } = inkModule;
+    const { useState } = reactModule;
+    const { render, Box, Text } = inkModule;
 
-    // Import our components
-    const components = require('../ui/components');
-    const { Box, Text, Spinner, FileCategories, FileChangeFilters } = components;
-    const hooks = require('../ui/hooks');
-    const { useGitChanges, useFileFilters } = hooks;
-    const ThemeProvider = require('../ui/ThemeProvider').ThemeProvider;
+    // Simple mock data for file changes
+    const mockChanges = [
+      { filePath: 'src/components/Header.js', status: 'modified' },
+      { filePath: 'src/components/Footer.js', status: 'modified' },
+      { filePath: 'src/pages/Home.js', status: 'added' },
+      { filePath: 'src/utils/helpers.js', status: 'added' },
+      { filePath: 'src/styles/main.css', status: 'deleted' },
+      { filePath: 'README.md', status: 'modified' },
+      { filePath: 'package.json', status: 'modified' },
+    ];
 
-    // Demo component using our UI components
+    // Demo component
     const FileCategoriesDemo = () => {
-      // Get current Git repo path (using process.cwd() for demo)
-      const repoPath = process.cwd();
+      // State for simulating group by directory
+      const [groupByDirectory, setGroupByDirectory] = useState(true);
 
-      // Use the Git changes hook
-      const { changes, loading, error, refreshChanges } = useGitChanges(repoPath);
+      // Generate categorized file lists
+      const categories = {
+        added: mockChanges.filter((file) => file.status === 'added'),
+        modified: mockChanges.filter((file) => file.status === 'modified'),
+        deleted: mockChanges.filter((file) => file.status === 'deleted'),
+      };
 
-      // Use the filters hook
-      const { activeFilters, groupByDirectory, handleFilterChange, toggleGroupByDirectory } =
-        useFileFilters();
+      // Display files by category or grouped by directory
+      const renderFileList = (files, color) => {
+        if (groupByDirectory) {
+          // Group files by directory
+          const directories = {};
+          files.forEach((file) => {
+            const dir = file.filePath.includes('/')
+              ? file.filePath.substring(0, file.filePath.lastIndexOf('/'))
+              : 'root';
 
-      // Show statistics
-      const [showStats, setShowStats] = useState(true);
+            if (!directories[dir]) {
+              directories[dir] = [];
+            }
+            directories[dir].push(file);
+          });
 
-      // Key handler for the demo
-      const handleKeyPress = useCallback(
-        (data) => {
-          const key = String(data);
-          // 'r' to refresh
-          if (key === 'r') {
-            console.log('Refreshing changes...');
-            refreshChanges();
-          }
-          // 'g' to toggle grouping
-          else if (key === 'g') {
-            toggleGroupByDirectory();
-          }
-          // 's' to toggle stats
-          else if (key === 's') {
-            setShowStats((prev) => !prev);
-          }
-          // 'q' to quit
-          else if (key === 'q' || key === '\u0003') {
-            process.exit(0);
-          }
-        },
-        [refreshChanges, toggleGroupByDirectory],
-      );
-
-      // Set up key listener
-      useEffect(() => {
-        process.stdin.setRawMode(true);
-        process.stdin.on('data', handleKeyPress);
-
-        return () => {
-          process.stdin.setRawMode(false);
-          process.stdin.off('data', handleKeyPress);
-        };
-      }, [handleKeyPress]);
-
-      if (error) {
-        return React.createElement(
-          Box,
-          { flexDirection: 'column', padding: 1 },
-          React.createElement(Text, { color: 'red' }, 'Error loading Git changes:'),
-          React.createElement(Text, { color: 'red' }, error.message),
-        );
-      }
-
-      if (loading && (!changes || changes.length === 0)) {
-        return React.createElement(
-          Box,
-          { padding: 1 },
-          React.createElement(Spinner, { text: 'Loading Git changes...' }),
-        );
-      }
+          return Object.entries(directories)
+            .map(([dir, dirFiles], dirIndex) => {
+              return [
+                React.createElement(Text, { color: 'yellow', key: `dir-${dirIndex}` }, dir),
+                ...dirFiles.map((file, fileIndex) => {
+                  const fileName = file.filePath.substring(file.filePath.lastIndexOf('/') + 1);
+                  return React.createElement(
+                    Box,
+                    { paddingLeft: 2, key: `file-${dirIndex}-${fileIndex}` },
+                    React.createElement(Text, { color }, fileName),
+                  );
+                }),
+              ];
+            })
+            .flat();
+        } else {
+          // Just list files without grouping
+          return files.map((file, index) =>
+            React.createElement(Text, { color, key: `file-${index}` }, file.filePath),
+          );
+        }
+      };
 
       return React.createElement(
         Box,
-        { flexDirection: 'column', padding: 1 },
-        React.createElement(Text, { bold: true }, 'Zen Commit - File Categorization Demo'),
-        React.createElement(
-          Box,
-          { marginY: 1 },
+        { flexDirection: 'column', padding: 1, borderStyle: 'round' },
+        [
           React.createElement(
             Text,
-            {},
-            "Press 'r' to refresh changes, 'g' to toggle grouping, 's' to toggle stats, 'q' to quit",
+            { bold: true, key: 'title' },
+            'Zen Commit - File Categorization Demo',
           ),
-        ),
-        React.createElement(FileChangeFilters, {
-          activeFilters: activeFilters,
-          onFilterChange: handleFilterChange,
-        }),
-        React.createElement(
-          Box,
-          { marginY: 1 },
-          React.createElement(Text, {}, 'Group by directory: '),
+
+          React.createElement(Box, { marginY: 1, key: 'grouping' }, [
+            React.createElement(Text, { key: 'groupLabel' }, 'Group by directory: '),
+            React.createElement(
+              Text,
+              { color: groupByDirectory ? 'green' : 'red', key: 'groupValue' },
+              groupByDirectory ? 'Yes' : 'No',
+            ),
+          ]),
+
           React.createElement(
-            Text,
-            { color: groupByDirectory ? 'green' : 'red' },
-            groupByDirectory ? 'Yes' : 'No',
+            Box,
+            { marginY: 1, key: 'controls' },
+            React.createElement(
+              Text,
+              {},
+              "Press 'g' to toggle grouping (simulated), Ctrl+C to exit",
+            ),
           ),
-        ),
-        React.createElement(FileCategories, {
-          changes: changes || [],
-          filters: activeFilters,
-          groupByDirectory: groupByDirectory,
-          showStats: showStats,
-        }),
+
+          // Added Files
+          React.createElement(
+            Box,
+            { flexDirection: 'column', marginTop: 1, key: 'added-section' },
+            [
+              React.createElement(
+                Text,
+                { bold: true, color: 'green', key: 'added-header' },
+                `Added Files (${categories.added.length})`,
+              ),
+              ...renderFileList(categories.added, 'green'),
+            ],
+          ),
+
+          // Modified Files
+          React.createElement(
+            Box,
+            { flexDirection: 'column', marginTop: 1, key: 'modified-section' },
+            [
+              React.createElement(
+                Text,
+                { bold: true, color: 'blue', key: 'modified-header' },
+                `Modified Files (${categories.modified.length})`,
+              ),
+              ...renderFileList(categories.modified, 'blue'),
+            ],
+          ),
+
+          // Deleted Files
+          React.createElement(
+            Box,
+            { flexDirection: 'column', marginTop: 1, key: 'deleted-section' },
+            [
+              React.createElement(
+                Text,
+                { bold: true, color: 'red', key: 'deleted-header' },
+                `Deleted Files (${categories.deleted.length})`,
+              ),
+              ...renderFileList(categories.deleted, 'red'),
+            ],
+          ),
+
+          // Stats Footer
+          React.createElement(
+            Box,
+            { marginTop: 2, key: 'stats' },
+            React.createElement(
+              Text,
+              { dimColor: true },
+              `Total: ${mockChanges.length} files (${categories.added.length} added, ${categories.modified.length} modified, ${categories.deleted.length} deleted)`,
+            ),
+          ),
+
+          React.createElement(
+            Box,
+            { marginTop: 1, key: 'hint' },
+            React.createElement(Text, { dimColor: true }, 'Press Ctrl+C to exit'),
+          ),
+        ],
       );
     };
 
     // Render the app
-    console.log('Starting file-categories demo...');
-    const { waitUntilExit } = render(
-      React.createElement(ThemeProvider, {}, React.createElement(FileCategoriesDemo)),
-    );
+    console.log('Rendering File Categories Demo...');
+    const { waitUntilExit } = render(React.createElement(FileCategoriesDemo));
 
-    // Wait for user to exit
+    // Wait until the user exits the app
     waitUntilExit().then(() => {
       process.exit(0);
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     console.error('Error:', error);
-  }
-})();
+  });

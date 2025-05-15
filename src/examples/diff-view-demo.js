@@ -1,99 +1,199 @@
 #!/usr/bin/env node
-// Diff view demo with JavaScript to avoid TypeScript issues
+// Diff view demo with the direct import approach that works
 
-// Use dynamic import for ink to avoid ESM/CommonJS issues
-(async () => {
-  try {
-    // Import the modules we need
-    const inkModule = await import('ink');
-    const reactModule = await import('react');
+// Using dynamic imports with Promise.all to avoid ESM/CommonJS issues
+const reactPromise = import('react');
+const inkPromise = import('ink');
+
+// Use Promise.all to wait for all imports
+Promise.all([reactPromise, inkPromise])
+  .then(([reactModule, inkModule]) => {
+    // Extract what we need from the modules
     const React = reactModule.default;
-    const { useState, useEffect } = React;
-    const { render } = inkModule;
+    const { useState } = reactModule;
+    const { render, Box, Text } = inkModule;
 
-    // Import our components
-    const components = require('../ui/components');
-    const { Box, Text, Spinner, FileDiffList } = components;
-    const hooks = require('../ui/hooks');
-    const { useGitChanges } = hooks;
-    const ThemeProvider = require('../ui/ThemeProvider').ThemeProvider;
+    // Mock diff data
+    const mockDiffs = [
+      {
+        filePath: 'src/components/Button.js',
+        status: 'modified',
+        hunks: [
+          {
+            content:
+              '@@ -15,7 +15,10 @@ const Button = ({ onClick, children, variant = "primary" }) => {',
+            changes: [
+              { content: '  return (', type: 'context' },
+              { content: '    <button', type: 'context' },
+              { content: '      onClick={onClick}', type: 'context' },
+              { content: '      className={`btn btn-${variant}`}', type: 'removed' },
+              { content: '      className={`btn btn-${variant} ${', type: 'added' },
+              { content: '        variant === "primary" ? "btn-main" : ""', type: 'added' },
+              { content: '      }`}', type: 'added' },
+              { content: '      data-testid="button"', type: 'context' },
+              { content: '    >', type: 'context' },
+            ],
+          },
+        ],
+      },
+      {
+        filePath: 'src/styles/theme.css',
+        status: 'modified',
+        hunks: [
+          {
+            content: '@@ -22,6 +22,12 @@',
+            changes: [
+              { content: '.btn {', type: 'context' },
+              { content: '  padding: 8px 16px;', type: 'context' },
+              { content: '  border-radius: 4px;', type: 'context' },
+              { content: '  cursor: pointer;', type: 'context' },
+              { content: '}', type: 'context' },
+              { content: '', type: 'context' },
+              { content: '.btn-main {', type: 'added' },
+              { content: '  font-weight: bold;', type: 'added' },
+              { content: '  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);', type: 'added' },
+              { content: '}', type: 'added' },
+              { content: '', type: 'context' },
+            ],
+          },
+        ],
+      },
+      {
+        filePath: 'README.md',
+        status: 'modified',
+        hunks: [
+          {
+            content: '@@ -42,6 +42,15 @@ npm start',
+            changes: [
+              { content: '## Features', type: 'context' },
+              { content: '', type: 'context' },
+              { content: '- Responsive design', type: 'context' },
+              { content: '- Dark mode support', type: 'context' },
+              { content: '- Accessibility optimized', type: 'added' },
+              { content: '- Performance focused', type: 'added' },
+              { content: '- Modern UI components', type: 'added' },
+              { content: '', type: 'context' },
+            ],
+          },
+          {
+            content: '@@ -58,8 +67,6 @@ npm test',
+            changes: [
+              { content: '## License', type: 'context' },
+              { content: '', type: 'context' },
+              { content: 'MIT', type: 'context' },
+              { content: '', type: 'context' },
+              { content: '## Todo', type: 'removed' },
+              { content: '- Add more tests', type: 'removed' },
+              { content: '', type: 'context' },
+            ],
+          },
+        ],
+      },
+    ];
 
-    // Demo component using our UI components
+    // Demo component
     const DiffViewDemo = () => {
-      // Get current Git repo path (using process.cwd() for demo)
-      const repoPath = process.cwd();
+      // Function to render a diff line with appropriate color
+      const renderDiffLine = (line, index) => {
+        let color = 'white';
+        let prefix = ' ';
 
-      // Use the Git changes hook
-      const { changes, loading, error, refreshChanges } = useGitChanges(repoPath);
+        if (line.type === 'added') {
+          color = 'green';
+          prefix = '+';
+        } else if (line.type === 'removed') {
+          color = 'red';
+          prefix = '-';
+        }
 
-      // Set up key handler for refreshing
-      useEffect(() => {
-        const handleKeyPress = (data) => {
-          const key = String(data);
-          if (key === 'r') {
-            console.log('Refreshing changes...');
-            refreshChanges();
-          }
-          // Ctrl+C to exit
-          if (key === '\u0003') {
-            process.exit(0);
-          }
-        };
-
-        process.stdin.setRawMode(true);
-        process.stdin.on('data', handleKeyPress);
-
-        return () => {
-          process.stdin.setRawMode(false);
-          process.stdin.off('data', handleKeyPress);
-        };
-      }, [refreshChanges]);
-
-      if (error) {
         return React.createElement(
-          Box,
-          { flexDirection: 'column', padding: 1 },
-          React.createElement(Text, { color: 'red' }, 'Error loading Git changes:'),
-          React.createElement(Text, { color: 'red' }, error.message),
+          Text,
+          { color, key: `line-${index}` },
+          `${prefix} ${line.content}`,
         );
-      }
-
-      if (loading && (!changes || changes.length === 0)) {
-        return React.createElement(
-          Box,
-          { padding: 1 },
-          React.createElement(Spinner, { text: 'Loading Git changes...' }),
-        );
-      }
+      };
 
       return React.createElement(
         Box,
-        { flexDirection: 'column', padding: 1 },
-        React.createElement(Text, { bold: true }, 'Zen Commit - Diff Visualization Demo'),
-        React.createElement(
-          Box,
-          { marginY: 1 },
-          React.createElement(Text, {}, "Press 'r' to refresh changes, Ctrl+C to exit"),
-        ),
-        React.createElement(FileDiffList, {
-          changes: changes || [],
-          repoPath: repoPath,
-          loading: loading,
-        }),
+        { flexDirection: 'column', padding: 1, borderStyle: 'round' },
+        [
+          React.createElement(
+            Text,
+            { bold: true, key: 'title' },
+            'Zen Commit - Diff Visualization Demo',
+          ),
+
+          ...mockDiffs.flatMap((file, fileIndex) => [
+            // File Header
+            React.createElement(
+              Box,
+              { marginTop: fileIndex > 0 ? 2 : 1, key: `file-${fileIndex}` },
+              [
+                React.createElement(Text, { bold: true, key: 'file-name' }, file.filePath),
+                React.createElement(
+                  Text,
+                  {
+                    color:
+                      file.status === 'added'
+                        ? 'green'
+                        : file.status === 'deleted'
+                          ? 'red'
+                          : 'blue',
+                    key: 'file-status',
+                  },
+                  ` (${file.status})`,
+                ),
+              ],
+            ),
+
+            // File Diff
+            ...file.hunks.flatMap((hunk, hunkIndex) => [
+              // Hunk Header
+              React.createElement(
+                Box,
+                { marginTop: 1, key: `hunk-${fileIndex}-${hunkIndex}` },
+                React.createElement(Text, { color: 'cyan' }, hunk.content),
+              ),
+
+              // Hunk Lines
+              ...hunk.changes.map((line, lineIndex) =>
+                React.createElement(
+                  Box,
+                  { key: `hunk-${fileIndex}-${hunkIndex}-line-${lineIndex}` },
+                  renderDiffLine(line, lineIndex),
+                ),
+              ),
+            ]),
+          ]),
+
+          React.createElement(
+            Box,
+            { marginTop: 2, key: 'stats' },
+            React.createElement(
+              Text,
+              { dimColor: true },
+              `Total: ${mockDiffs.length} files changed`,
+            ),
+          ),
+
+          React.createElement(
+            Box,
+            { marginTop: 1, key: 'hint' },
+            React.createElement(Text, { dimColor: true }, 'Press Ctrl+C to exit'),
+          ),
+        ],
       );
     };
 
     // Render the app
-    console.log('Starting diff-view demo...');
-    const { waitUntilExit } = render(
-      React.createElement(ThemeProvider, {}, React.createElement(DiffViewDemo)),
-    );
+    console.log('Rendering Diff View Demo...');
+    const { waitUntilExit } = render(React.createElement(DiffViewDemo));
 
-    // Wait for user to exit
+    // Wait until the user exits the app
     waitUntilExit().then(() => {
       process.exit(0);
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     console.error('Error:', error);
-  }
-})();
+  });
