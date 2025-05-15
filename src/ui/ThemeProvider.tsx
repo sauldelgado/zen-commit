@@ -12,19 +12,16 @@ export interface ThemeProviderProps {
 /**
  * Provider for theme context
  */
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
-  theme,
-  children,
-}) => {
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ theme, children }) => {
   // Simple manual merge for our use case
-  const mergedTheme: Theme = theme 
+  const mergedTheme: Theme = theme
     ? {
         ...defaultTheme,
         colors: {
           ...defaultTheme.colors,
           ...(theme.colors || {}),
         },
-        text: theme.text 
+        text: theme.text
           ? {
               ...defaultTheme.text,
               heading: {
@@ -45,14 +42,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
           ...defaultTheme.spacing,
           ...(theme.spacing || {}),
         },
-      } 
+      }
     : defaultTheme;
-  
-  return (
-    <ThemeContext.Provider value={mergedTheme}>
-      {children}
-    </ThemeContext.Provider>
-  );
+
+  return <ThemeContext.Provider value={mergedTheme}>{children}</ThemeContext.Provider>;
 };
 
 /**

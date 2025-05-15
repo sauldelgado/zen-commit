@@ -36,8 +36,8 @@ This implementation plan is organized into phases, each containing multiple step
 | 1     | 1.2.2 | Help documentation system           | Completed   | [#5](https://github.com/sauldelgado/zen-commit/pull/5) |
 | 1     | 1.2.3 | Base UI component library           | Completed   | [#6](https://github.com/sauldelgado/zen-commit/pull/6) |
 | 1     | 1.3.1 | Git repository detection            | Completed   | [#7](https://github.com/sauldelgado/zen-commit/pull/7) |
-| 1     | 1.3.2 | Git operations interface            | In Progress | [#8](https://github.com/sauldelgado/zen-commit/pull/8) |
-| 1     | 1.3.3 | Change status detection             | Not Started |                                                        |
+| 1     | 1.3.2 | Git operations interface            | Completed   | [#8](https://github.com/sauldelgado/zen-commit/pull/8) |
+| 1     | 1.3.3 | Change status detection             | In Progress |                                                        |
 | 2     | 2.1.1 | Staged files listing                | Not Started |                                                        |
 | 2     | 2.1.2 | File categorization                 | Not Started |                                                        |
 | 2     | 2.1.3 | Basic diff visualization            | Not Started |                                                        |

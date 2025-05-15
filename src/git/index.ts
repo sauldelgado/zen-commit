@@ -9,6 +9,14 @@ export {
 
 export { createGitOperations, GitError, GitErrorType } from './operations';
 
+export {
+  getFileChanges,
+  categorizeChanges,
+  getChangeStats,
+  getFileType,
+  parseGitDiff,
+} from './change-detection';
+
 export type { GitOperations } from './operations';
 
 export type {
@@ -19,3 +27,11 @@ export type {
   CommitOptions,
   StageOptions,
 } from './types';
+
+export type {
+  FileChange,
+  ChangeType,
+  ChangeCategories,
+  ChangeStats,
+  FileDiff,
+} from './change-detection/types';

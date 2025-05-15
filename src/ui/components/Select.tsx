@@ -24,12 +24,7 @@ export interface SelectProps<T extends Item> {
 /**
  * A select list component with optional label
  */
-const Select = function<T extends Item>({ 
-  items, 
-  label, 
-  onSelect, 
-  ...props 
-}: SelectProps<T>) {
+const Select = function <T extends Item>({ items, label, onSelect, ...props }: SelectProps<T>) {
   return (
     <Box flexDirection="column">
       {label && (
@@ -37,14 +32,10 @@ const Select = function<T extends Item>({
           <Box.Text>{label}</Box.Text>
         </Box>
       )}
-      
-      <SelectInput 
-        items={items} 
-        onSelect={onSelect} 
-        {...props} 
-      />
+
+      <SelectInput items={items} onSelect={onSelect} {...props} />
     </Box>
   );
-}
+};
 
 export default Select;
