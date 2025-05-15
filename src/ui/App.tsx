@@ -7,7 +7,7 @@ const render = (_element: React.ReactElement, _options = {}) => {
     cleanup: () => {},
     rerender: () => {},
     frames: [],
-    lastFrame: () => "",
+    lastFrame: () => '',
   };
 };
 import { ThemeProvider } from './ThemeProvider';
@@ -22,16 +22,8 @@ export interface AppProps {
 /**
  * Main app wrapper for Zen Commit CLI
  */
-const App: React.FC<AppProps> = ({ 
-  children, 
-  theme, 
-  _onExit 
-}) => {
-  return (
-    <ThemeProvider theme={theme}>
-      {children}
-    </ThemeProvider>
-  );
+const App: React.FC<AppProps> = ({ children, theme }) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
 /**
@@ -40,10 +32,7 @@ const App: React.FC<AppProps> = ({
  * @param onExit Callback when the app exits
  * @returns The render instance
  */
-export const renderApp = (
-  element: React.ReactElement,
-  _onExit?: () => void
-) => {
+export const renderApp = (element: React.ReactElement, _onExit?: () => void) => {
   return render(element, {});
 };
 

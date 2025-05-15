@@ -18,12 +18,7 @@ export interface InputProps {
 /**
  * A text input component with optional label and error message
  */
-const Input: React.FC<InputProps> = ({ 
-  label, 
-  error, 
-  onChange, 
-  ...props 
-}) => {
+const Input: React.FC<InputProps> = ({ label, error, onChange, ...props }) => {
   return (
     <Box flexDirection="column">
       {label && (
@@ -31,9 +26,9 @@ const Input: React.FC<InputProps> = ({
           <Box.Text>{label}</Box.Text>
         </Box>
       )}
-      
+
       <TextInput onChange={onChange} {...props} />
-      
+
       {error && (
         <Box marginTop={1}>
           <Box.Text color="red">{error}</Box.Text>
