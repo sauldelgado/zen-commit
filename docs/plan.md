@@ -48,6 +48,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.3.1 | Confirmation dialog                 | Completed   | [#18](https://github.com/sauldelgado/zen-commit/pull/18) |
 | 2     | 2.3.2 | Error handling system               | Completed   | [#19](https://github.com/sauldelgado/zen-commit/pull/19) |
 | 2     | 2.3.3 | Success feedback UI                 | Completed   | [#20](https://github.com/sauldelgado/zen-commit/pull/20) |
+| 2     | 2.3.4 | Test coverage completion            | Not Started |                                                          |
 | 3     | 3.1.1 | Conventional commits implementation | Not Started |                                                          |
 | 3     | 3.1.2 | Custom template definition          | Not Started |                                                          |
 | 3     | 3.1.3 | Template selection UI               | Not Started |                                                          |
@@ -198,6 +199,11 @@ This phase implements the main user experience of Zen Commit.
       - Success confirmation
       - Commit hash display
       - Next step suggestions
+      
+   4. **Test coverage completion** [details in `docs/steps/2.3.4-test-coverage-completion.md`]
+      - Complete skipped tests
+      - Add integration tests
+      - Documentation improvements
 
 ### Phase 3: Enhanced Features
 
