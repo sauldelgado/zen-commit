@@ -412,6 +412,75 @@ Directory
 
     mockOutput = output;
   }
+  // Special handling for CommitScreen component
+  else if (componentType === 'CommitScreen') {
+    const initialCommitScreen = `
+Subject:
+Enter a commit message...
+
+Body:
+No body
+
+Tab: Switch fields | Enter: Submit | Esc: Cancel
+    `;
+
+    const confirmationScreen = `
+Confirm Commit
+Are you sure you want to create this commit?
+
+Commit Message:
+feat: implement new feature
+
+Staged Files (3):
+M src/index.ts
+A src/components/Button.tsx
+M README.md
+
+› Commit   Cancel
+Press Y/y to confirm, N/n or Esc to cancel
+    `;
+
+    let isShowingConfirmation = false;
+    let hasCommitMessage = false;
+
+    mockOutput = initialCommitScreen;
+
+    return {
+      lastFrame: () => (isShowingConfirmation ? confirmationScreen : initialCommitScreen),
+      frames: [mockOutput],
+      stdin: {
+        write: (input) => {
+          // Handle typing a commit message
+          if (input && input.length > 1 && !input.includes('\r')) {
+            hasCommitMessage = true;
+          }
+
+          // Handle Enter key to submit
+          if (input === '\r') {
+            if (hasCommitMessage && !isShowingConfirmation) {
+              isShowingConfirmation = true;
+              mockOutput = confirmationScreen;
+            }
+          }
+
+          // Handle y/n responses in confirmation
+          if (isShowingConfirmation) {
+            if (input === 'y' || input === 'Y') {
+              isShowingConfirmation = false;
+              hasCommitMessage = false;
+              mockOutput = initialCommitScreen;
+            } else if (input === 'n' || input === 'N') {
+              isShowingConfirmation = false;
+              mockOutput = initialCommitScreen;
+            }
+          }
+        },
+      },
+      rerender: jest.fn(),
+      unmount: jest.fn(),
+      cleanup: jest.fn(),
+    };
+  }
   // Use StagedFilesList output as default for unhandled components
   else {
     mockOutput = `
@@ -487,7 +556,7 @@ No staged changes
       if (elementProps.onConfirm) {
         elementProps.onConfirm();
       }
-    } else if (input === 'n' || input === 'N' || input === '\t\r') {
+    } else if (input === 'n' || input === 'N' || input === '\t\r' || input === '\u001b') {
       if (elementProps.onCancel) {
         elementProps.onCancel();
       }

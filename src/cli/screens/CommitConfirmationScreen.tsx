@@ -2,15 +2,21 @@ import React from 'react';
 import { Box, Text, ConfirmationDialog } from '@ui/components';
 
 /**
+ * Union type representing possible Git file statuses
+ * Limited to specific, known statuses for better type safety
+ */
+type FileStatus = 'modified' | 'added' | 'deleted' | 'renamed' | 'copied' | 'unknown';
+
+/**
  * Represents a file that has been staged for commit in Git
  *
  * @interface StagedFile
  * @property {string} path - The relative path to the file from the repository root
- * @property {'modified' | 'added' | 'deleted' | 'renamed' | 'copied'} status - The Git status of the file
+ * @property {FileStatus} status - The Git status of the file
  */
 interface StagedFile {
   path: string;
-  status: 'modified' | 'added' | 'deleted' | 'renamed' | 'copied';
+  status: FileStatus;
 }
 
 /**
@@ -122,12 +128,6 @@ const CommitConfirmationScreen: React.FC<CommitConfirmationScreenProps> = ({
 };
 
 /**
- * Union type representing possible Git file statuses
- * Includes string to allow for future or custom statuses
- */
-type FileStatus = 'modified' | 'added' | 'deleted' | 'renamed' | 'copied' | string;
-
-/**
  * Maps a Git file status to a color for display
  *
  * @param {FileStatus} status - The Git status of the file
@@ -149,6 +149,7 @@ const getStatusColor = (status: FileStatus): string => {
     case 'renamed':
     case 'copied':
       return 'blue';
+    case 'unknown':
     default:
       return 'white';
   }
@@ -181,6 +182,7 @@ const getStatusSymbol = (status: FileStatus): string => {
       return 'R';
     case 'copied':
       return 'C';
+    case 'unknown':
     default:
       return '?';
   }
