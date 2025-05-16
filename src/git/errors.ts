@@ -1,4 +1,5 @@
 import { GitErrorType } from './types';
+import type { ErrorResult } from '@utils/errors';
 
 /**
  * Custom error class for Git operations
@@ -6,12 +7,16 @@ import { GitErrorType } from './types';
 export class GitError extends Error {
   type: GitErrorType;
   cause?: Error;
+  details?: string;
+  metadata?: Record<string, any>;
 
   constructor(message: string, type: GitErrorType = GitErrorType.UNKNOWN_ERROR, cause?: Error) {
     super(message);
     this.name = 'GitError';
     this.type = type;
     this.cause = cause;
+    this.details = cause?.message || '';
+    this.metadata = {};
 
     // Captures the stack trace (required for extending Error in TypeScript)
     if (Error.captureStackTrace) {
@@ -89,5 +94,19 @@ export class GitError extends Error {
       type,
       error instanceof Error ? error : undefined,
     );
+  }
+
+  /**
+   * Convert to a format compatible with the ErrorResult interface
+   * This adapter method helps integrate with the utility error handler
+   */
+  toErrorResult(): Partial<ErrorResult> {
+    return {
+      type: 'git',
+      message: this.message,
+      details: this.details || this.toUserMessage(),
+      recoverable: this.shouldRetry(),
+      error: this,
+    };
   }
 }
