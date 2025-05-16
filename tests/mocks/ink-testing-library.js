@@ -339,6 +339,148 @@ Directory
     }
   }
 
+  // Special handling for ConfirmationDialog component
+  else if (componentType === 'ConfirmationDialog') {
+    const props = elementProps;
+    const title = props?.title || 'Confirm';
+    const message = props?.message || 'Are you sure?';
+    const confirmText = props?.confirmText || 'Yes';
+    const cancelText = props?.cancelText || 'No';
+
+    let output = `${title}\n${message}\n\n`;
+
+    // Add content if provided
+    if (props?.content) {
+      if (typeof props.content === 'string') {
+        output += `${props.content}\n\n`;
+      } else if (props.content.props && props.content.props.children) {
+        output += `Additional content goes here\n\n`;
+      }
+    }
+
+    output += `› ${confirmText}   ${cancelText}\n`;
+    output += `Press Y/y to confirm, N/n or Esc to cancel`;
+
+    mockOutput = output;
+  }
+
+  // Special handling for CommitConfirmationScreen component
+  else if (componentType === 'CommitConfirmationScreen') {
+    const props = elementProps;
+    const commitMessage = props?.commitMessage || '';
+    const stagedFiles = props?.stagedFiles || [];
+
+    let output = `Confirm Commit\nAre you sure you want to create this commit?\n\n`;
+    output += `Commit Message:\n${commitMessage}\n\n`;
+    output += `Staged Files (${stagedFiles.length}):\n`;
+
+    stagedFiles.forEach((file) => {
+      let statusSymbol = '';
+      let statusColor = '';
+
+      switch (file.status) {
+        case 'added':
+          statusSymbol = 'A';
+          statusColor = 'green';
+          break;
+        case 'modified':
+          statusSymbol = 'M';
+          statusColor = 'yellow';
+          break;
+        case 'deleted':
+          statusSymbol = 'D';
+          statusColor = 'red';
+          break;
+        case 'renamed':
+          statusSymbol = 'R';
+          statusColor = 'blue';
+          break;
+        case 'copied':
+          statusSymbol = 'C';
+          statusColor = 'blue';
+          break;
+        default:
+          statusSymbol = '?';
+          statusColor = 'white';
+      }
+
+      output += `${statusSymbol} ${file.path}\n`;
+    });
+
+    output += `\n› Commit   Cancel\n`;
+    output += `Press Y/y to confirm, N/n or Esc to cancel`;
+
+    mockOutput = output;
+  }
+  // Special handling for CommitScreen component
+  else if (componentType === 'CommitScreen') {
+    const initialCommitScreen = `
+Subject:
+Enter a commit message...
+
+Body:
+No body
+
+Tab: Switch fields | Enter: Submit | Esc: Cancel
+    `;
+
+    const confirmationScreen = `
+Confirm Commit
+Are you sure you want to create this commit?
+
+Commit Message:
+feat: implement new feature
+
+Staged Files (3):
+M src/index.ts
+A src/components/Button.tsx
+M README.md
+
+› Commit   Cancel
+Press Y/y to confirm, N/n or Esc to cancel
+    `;
+
+    let isShowingConfirmation = false;
+    let hasCommitMessage = false;
+
+    mockOutput = initialCommitScreen;
+
+    return {
+      lastFrame: () => (isShowingConfirmation ? confirmationScreen : initialCommitScreen),
+      frames: [mockOutput],
+      stdin: {
+        write: (input) => {
+          // Handle typing a commit message
+          if (input && input.length > 1 && !input.includes('\r')) {
+            hasCommitMessage = true;
+          }
+
+          // Handle Enter key to submit
+          if (input === '\r') {
+            if (hasCommitMessage && !isShowingConfirmation) {
+              isShowingConfirmation = true;
+              mockOutput = confirmationScreen;
+            }
+          }
+
+          // Handle y/n responses in confirmation
+          if (isShowingConfirmation) {
+            if (input === 'y' || input === 'Y') {
+              isShowingConfirmation = false;
+              hasCommitMessage = false;
+              mockOutput = initialCommitScreen;
+            } else if (input === 'n' || input === 'N') {
+              isShowingConfirmation = false;
+              mockOutput = initialCommitScreen;
+            }
+          }
+        },
+      },
+      rerender: jest.fn(),
+      unmount: jest.fn(),
+      cleanup: jest.fn(),
+    };
+  }
   // Use StagedFilesList output as default for unhandled components
   else {
     mockOutput = `
@@ -406,6 +548,21 @@ No staged changes
     }
   };
 
+  // Handle confirmation dialog events
+  const handleConfirmationDialogEvents = (input) => {
+    if (!elementProps) return;
+
+    if (input === 'y' || input === 'Y' || input === '\r') {
+      if (elementProps.onConfirm) {
+        elementProps.onConfirm();
+      }
+    } else if (input === 'n' || input === 'N' || input === '\t\r' || input === '\u001b') {
+      if (elementProps.onCancel) {
+        elementProps.onCancel();
+      }
+    }
+  };
+
   return {
     lastFrame: () => mockOutput,
     frames: [mockOutput],
@@ -420,6 +577,10 @@ No staged changes
           handleFilterEvents(input);
         } else if (componentType === 'CommitMessageInput') {
           handleCommitMessageInputEvents(input);
+        } else if (componentType === 'ConfirmationDialog') {
+          handleConfirmationDialogEvents(input);
+        } else if (componentType === 'CommitConfirmationScreen') {
+          handleConfirmationDialogEvents(input);
         }
       },
     },

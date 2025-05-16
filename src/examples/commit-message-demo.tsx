@@ -9,7 +9,7 @@ import { CommitMessageInput } from '../ui/components';
  */
 const CommitMessageDemo = () => {
   const [message, setMessage] = useState('');
-  const [showSubjectBody, setShowSubjectBody] = useState(false);
+  const [showSubjectBody] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (value: string) => {

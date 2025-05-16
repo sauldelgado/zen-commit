@@ -14,6 +14,7 @@ export { default as MessageValidator } from './MessageValidator';
 export { default as QualityIndicator } from './QualityIndicator';
 export { default as ValidationSummary } from './ValidationSummary';
 export { default as CharacterCounter } from './CharacterCounter';
+export { default as ConfirmationDialog } from './ConfirmationDialog';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -32,3 +33,4 @@ export type { MessageValidatorProps } from './MessageValidator';
 export type { QualityIndicatorProps } from './QualityIndicator';
 export type { ValidationSummaryProps } from './ValidationSummary';
 export type { CharacterCounterProps } from './CharacterCounter';
+export type { ConfirmationDialogProps } from './ConfirmationDialog';

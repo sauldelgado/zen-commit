@@ -53,7 +53,9 @@
     "simple-direct-demo": "node src/examples/simple-direct-demo.js",
     "ink-minimal-demo": "ts-node src/examples/ink-minimal-demo.tsx",
     "ink-direct": "node src/examples/ink-direct.js",
-    "ui-js-demo": "node src/examples/ui-demo.js"
+    "ui-js-demo": "node src/examples/ui-demo.js",
+    "confirmation-dialog-demo": "ts-node src/examples/confirmation-dialog-demo.tsx",
+    "commit-screen-demo": "ts-node src/examples/commit-screen-demo.js"
   },
   "repository": {
     "type": "git",
