@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
-import { ErrorResult } from '@utils/errors';
+import { ErrorResult } from '@utils/error-types';
 
 export interface ErrorMessageProps {
   error: ErrorResult;
@@ -77,7 +77,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, onDismiss, onRetry }
       {error.suggestions.length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           <Text bold>Suggestions:</Text>
-          {error.suggestions.map((suggestion, index) => (
+          {error.suggestions.map((suggestion: string, index: number) => (
             <Text key={index}> • {suggestion}</Text>
           ))}
         </Box>

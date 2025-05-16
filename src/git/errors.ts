@@ -1,14 +1,14 @@
 import { GitErrorType } from './types';
-import type { ErrorResult } from '@utils/errors';
+import type { ErrorBase, ErrorResult } from '@utils/error-types';
 
 /**
  * Custom error class for Git operations
  */
-export class GitError extends Error {
+export class GitError extends Error implements ErrorBase {
   type: GitErrorType;
   cause?: Error;
-  details?: string;
-  metadata?: Record<string, any>;
+  details: string;
+  metadata: Record<string, any>;
 
   constructor(message: string, type: GitErrorType = GitErrorType.UNKNOWN_ERROR, cause?: Error) {
     super(message);
@@ -16,7 +16,7 @@ export class GitError extends Error {
     this.type = type;
     this.cause = cause;
     this.details = cause?.message || '';
-    this.metadata = {};
+    this.metadata = { gitErrorType: type };
 
     // Captures the stack trace (required for extending Error in TypeScript)
     if (Error.captureStackTrace) {
@@ -37,6 +37,21 @@ export class GitError extends Error {
     // Retry on network errors
     if (this.type === GitErrorType.NETWORK_ERROR) {
       return true;
+    }
+
+    // Make specific command errors recoverable - add them here as needed
+    if (this.type === GitErrorType.COMMAND_ERROR) {
+      const recoverableErrors = [
+        'no changes added to commit',
+        'nothing to commit',
+        'please tell me who you are',
+      ];
+
+      for (const errMsg of recoverableErrors) {
+        if (this.message.toLowerCase().includes(errMsg.toLowerCase())) {
+          return true;
+        }
+      }
     }
 
     return false;

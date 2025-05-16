@@ -14,6 +14,7 @@ export interface GitOperations {
   getConfig(key: string): Promise<string>;
   getBranches(): Promise<string[]>;
   checkoutBranch(branch: string): Promise<void>;
+  hasRemoteTracking(): Promise<boolean>;
 }
 
 /**
@@ -212,6 +213,28 @@ class GitOperationsImpl implements GitOperations {
     return this.executeWithRetry(async () => {
       await this.git.checkout(branch);
     }, 'checkoutBranch');
+  }
+
+  /**
+   * Check if the current branch has a remote tracking branch
+   * @returns True if the current branch has a remote tracking branch
+   */
+  async hasRemoteTracking(): Promise<boolean> {
+    try {
+      const branch = await this.getCurrentBranch();
+      return this.executeWithRetry(async () => {
+        try {
+          const result = await this.git.raw(['rev-parse', '--abbrev-ref', `${branch}@{upstream}`]);
+          return !!result.trim();
+        } catch (error) {
+          // This is not really an error, it just means there's no upstream
+          return false;
+        }
+      }, 'hasRemoteTracking');
+    } catch (error) {
+      // If we can't get the current branch, assume no tracking
+      return false;
+    }
   }
 }
 

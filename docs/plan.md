@@ -47,7 +47,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.2.4 | Ink rendering implementation        | Completed   | [#17](https://github.com/sauldelgado/zen-commit/pull/17) |
 | 2     | 2.3.1 | Confirmation dialog                 | Completed   | [#18](https://github.com/sauldelgado/zen-commit/pull/18) |
 | 2     | 2.3.2 | Error handling system               | Completed   | [#19](https://github.com/sauldelgado/zen-commit/pull/19) |
-| 2     | 2.3.3 | Success feedback UI                 | Not Started |                                                          |
+| 2     | 2.3.3 | Success feedback UI                 | Completed   | [#20](https://github.com/sauldelgado/zen-commit/pull/20) |
 | 3     | 3.1.1 | Conventional commits implementation | Not Started |                                                          |
 | 3     | 3.1.2 | Custom template definition          | Not Started |                                                          |
 | 3     | 3.1.3 | Template selection UI               | Not Started |                                                          |

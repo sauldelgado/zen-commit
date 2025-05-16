@@ -15,7 +15,31 @@ const FileDiffList = jest.fn().mockImplementation(({ changes, repoPath, loading 
   });
 });
 
+const SuccessFeedback = jest
+  .fn()
+  .mockImplementation(({ title, message, commitHash, nextSteps }) => {
+    return React.createElement(
+      'div',
+      {
+        testID: 'successFeedback',
+        'data-title': title,
+        'data-message': message,
+        'data-commit-hash': commitHash,
+        'data-next-steps': JSON.stringify(nextSteps || []),
+      },
+      [
+        React.createElement('div', { key: 'title' }, title),
+        React.createElement('div', { key: 'message' }, message),
+        React.createElement('div', { key: 'hash' }, `Commit hash: ${commitHash}`),
+        ...(nextSteps || []).map((step, i) =>
+          React.createElement('div', { key: `step-${i}` }, step),
+        ),
+      ],
+    );
+  });
+
 module.exports = {
   DiffView,
   FileDiffList,
+  SuccessFeedback,
 };

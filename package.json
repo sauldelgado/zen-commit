@@ -106,6 +106,8 @@
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/ink": "^0.5.2",
     "@types/ink-select-input": "^3.0.5",

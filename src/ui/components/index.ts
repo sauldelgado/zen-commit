@@ -16,6 +16,7 @@ export { default as ValidationSummary } from './ValidationSummary';
 export { default as CharacterCounter } from './CharacterCounter';
 export { default as ConfirmationDialog } from './ConfirmationDialog';
 export { default as ErrorMessage } from './ErrorMessage';
+export { default as SuccessFeedback } from './SuccessFeedback';
 
 // Export types
 export type { BoxProps } from './Box';
@@ -36,3 +37,4 @@ export type { ValidationSummaryProps } from './ValidationSummary';
 export type { CharacterCounterProps } from './CharacterCounter';
 export type { ConfirmationDialogProps } from './ConfirmationDialog';
 export type { ErrorMessageProps } from './ErrorMessage';
+export type { SuccessFeedbackProps } from './SuccessFeedback';
