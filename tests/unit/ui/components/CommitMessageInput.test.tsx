@@ -2,6 +2,68 @@ import React from 'react';
 import { render } from 'ink-testing-library';
 import { CommitMessageInput } from '@ui/components';
 
+// Mock the dependencies
+jest.mock('@ui/components/QualityIndicator', () => {
+  return function MockQualityIndicator({ score, label }) {
+    return (
+      <div data-testid="quality-indicator">
+        {label}: {score}
+      </div>
+    );
+  };
+});
+
+jest.mock('@ui/components/ValidationSummary', () => {
+  return function MockValidationSummary({ validation, expanded }) {
+    return (
+      <div data-testid="validation-summary" data-expanded={expanded}>
+        Validation Summary (expanded: {expanded ? 'true' : 'false'})
+        {validation && <div>{JSON.stringify(validation)}</div>}
+      </div>
+    );
+  };
+});
+
+jest.mock('@ui/components/MessageValidator', () => {
+  return function MockMessageValidator({ message, conventionalCommit }) {
+    return (
+      <div data-testid="message-validator">
+        Validating: {message}
+        {conventionalCommit && <div>Using conventional commit format</div>}
+      </div>
+    );
+  };
+});
+
+jest.mock('@ui/components/CharacterCounter', () => {
+  return function MockCharacterCounter({
+    current,
+    limit,
+    showWarning,
+  }: {
+    current: number;
+    limit?: number;
+    showWarning?: boolean;
+  }) {
+    return (
+      <div data-testid="char-counter">
+        {current}/{limit} {showWarning ? 'WARNING' : ''}
+      </div>
+    );
+  };
+});
+
+jest.mock('@ui/hooks/useMessageValidation', () => {
+  return jest.fn().mockReturnValue({
+    isValid: true,
+    messages: [],
+    qualityScore: 0.75,
+    isSubjectTooLong: false,
+    isConventionalCommit: true,
+    suggestions: [],
+  });
+});
+
 describe('CommitMessageInput Component', () => {
   it('should render the commit message input field', () => {
     const { lastFrame } = render(<CommitMessageInput value="" onChange={() => {}} />);
@@ -38,8 +100,7 @@ describe('CommitMessageInput Component', () => {
     expect(onSubmit).toHaveBeenCalledWith('Test message');
   });
 
-  // Note: Skipped because testing environment doesn't properly render the components
-  it.skip('should display visual feedback when enabled', () => {
+  it('should display visual feedback when enabled', () => {
     const { lastFrame } = render(
       <CommitMessageInput value="feat: add new feature" onChange={() => {}} showFeedback={true} />,
     );
@@ -48,8 +109,7 @@ describe('CommitMessageInput Component', () => {
     expect(lastFrame()).toContain('Quality');
   });
 
-  // Note: Skipped because testing environment doesn't properly render the components
-  it.skip('should not display feedback when disabled', () => {
+  it('should not display feedback when disabled', () => {
     const { lastFrame } = render(
       <CommitMessageInput value="feat: add new feature" onChange={() => {}} showFeedback={false} />,
     );
@@ -120,13 +180,13 @@ describe('CommitMessageInput Component', () => {
   });
 
   describe('with visual feedback', () => {
-    // Note: Skipped because testing environment doesn't properly render the components
-    it.skip('should respect feedbackExpanded prop', () => {
+    it('should respect feedbackExpanded prop', () => {
       const { lastFrame: collapsedFrame } = render(
         <CommitMessageInput
           value="feat: add new feature"
           onChange={() => {}}
           showFeedback={true}
+          showValidation={true}
           feedbackExpanded={false}
         />,
       );
@@ -136,11 +196,40 @@ describe('CommitMessageInput Component', () => {
           value="feat: add new feature"
           onChange={() => {}}
           showFeedback={true}
+          showValidation={true}
           feedbackExpanded={true}
         />,
       );
 
-      expect(expandedFrame()?.length || 1).toBeGreaterThan(collapsedFrame()?.length || 0);
+      // Check for the expanded status in the output
+      expect(collapsedFrame()).toContain('expanded: false');
+      expect(expandedFrame()).toContain('expanded: true');
+    });
+
+    it('should show validation summary when showValidation is true', () => {
+      const { lastFrame } = render(
+        <CommitMessageInput
+          value="feat: add new feature"
+          onChange={() => {}}
+          showFeedback={true}
+          showValidation={true}
+        />,
+      );
+
+      expect(lastFrame()).toContain('Validation Summary');
+    });
+
+    it('should not show validation summary when showValidation is false', () => {
+      const { lastFrame } = render(
+        <CommitMessageInput
+          value="feat: add new feature"
+          onChange={() => {}}
+          showFeedback={true}
+          showValidation={false}
+        />,
+      );
+
+      expect(lastFrame()).not.toContain('Validation Summary');
     });
   });
 });
