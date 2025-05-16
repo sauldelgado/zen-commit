@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 import React, { useState } from 'react';
 import { render } from 'ink';
-import { Box, Text } from '@ui/components';
-import { CommitConfirmationScreen } from '@cli/screens';
+import { Box, Text } from '../ui/components';
+import { CommitConfirmationScreen } from '../cli/screens';
 
 const Demo = () => {
   const [confirmed, setConfirmed] = useState(false);
@@ -53,4 +55,5 @@ const Demo = () => {
   );
 };
 
-render(<Demo />);
+// @ts-ignore - This is needed because ink's types are not complete
+render(React.createElement(Demo));

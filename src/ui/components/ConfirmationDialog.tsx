@@ -3,6 +3,18 @@ import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
 import { useInput } from 'ink';
 
+/**
+ * Properties for the ConfirmationDialog component
+ *
+ * @interface ConfirmationDialogProps
+ * @property {string} title - The title displayed at the top of the dialog
+ * @property {string} message - The main message/question asking for confirmation
+ * @property {() => void} onConfirm - Function called when the user confirms the action
+ * @property {() => void} onCancel - Function called when the user cancels the action
+ * @property {ReactNode} [content] - Optional content to display between the message and buttons
+ * @property {string} [confirmText="Yes"] - Custom text for the confirm button
+ * @property {string} [cancelText="No"] - Custom text for the cancel button
+ */
 interface ConfirmationDialogProps {
   title: string;
   message: string;
@@ -14,7 +26,18 @@ interface ConfirmationDialogProps {
 }
 
 /**
- * A dialog component that asks for confirmation before proceeding with an action
+ * A dialog component that asks for confirmation before proceeding with an action.
+ * Provides buttons for confirmation and cancellation, as well as keyboard shortcuts.
+ *
+ * @example
+ * ```tsx
+ * <ConfirmationDialog
+ *   title="Confirm Action"
+ *   message="Are you sure you want to proceed?"
+ *   onConfirm={() => console.log('Confirmed')}
+ *   onCancel={() => console.log('Cancelled')}
+ * />
+ * ```
  */
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   title,
@@ -40,8 +63,14 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     }
   });
 
+  // Define the item type for SelectInput
+  interface SelectItem {
+    label: string;
+    value: string;
+  }
+
   // Handle selection from the select input
-  const handleSelect = (item: { label: string; value: string }) => {
+  const handleSelect = (item: SelectItem): void => {
     if (item.value === 'confirm') {
       onConfirm();
     } else {
