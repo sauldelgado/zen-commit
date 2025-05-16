@@ -18,7 +18,7 @@ const App: React.FC<AppProps> = ({ children, theme }) => {
 /**
  * Mock render function for testing environments
  */
-const mockRender = (element: React.ReactElement, _options = {}) => {
+const mockRender = (_element: React.ReactElement, _options = {}) => {
   return {
     unmount: () => {},
     waitUntilExit: () => Promise.resolve(),
@@ -50,7 +50,7 @@ export const renderApp = (element: React.ReactElement, onExit?: () => void) => {
 
     // We immediately execute it and wait for the promise
     dynamicImport('ink')
-      .then((inkModule) => {
+      .then((inkModule: { render: any }) => {
         const { render } = inkModule;
         render(element, {
           exitOnCtrlC: true,
@@ -58,7 +58,7 @@ export const renderApp = (element: React.ReactElement, onExit?: () => void) => {
           onExit,
         });
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error('Error loading Ink:', err);
       });
 
