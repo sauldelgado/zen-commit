@@ -17,6 +17,8 @@ export {
   parseGitDiff,
 } from './change-detection';
 
+export { mapGitStatusToStagedFiles } from './utils';
+
 export type { GitOperations } from './operations';
 
 export type {
