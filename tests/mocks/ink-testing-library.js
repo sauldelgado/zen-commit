@@ -364,6 +364,54 @@ Directory
     mockOutput = output;
   }
 
+  // Special handling for CommitConfirmationScreen component
+  else if (componentType === 'CommitConfirmationScreen') {
+    const props = elementProps;
+    const commitMessage = props?.commitMessage || '';
+    const stagedFiles = props?.stagedFiles || [];
+
+    let output = `Confirm Commit\nAre you sure you want to create this commit?\n\n`;
+    output += `Commit Message:\n${commitMessage}\n\n`;
+    output += `Staged Files (${stagedFiles.length}):\n`;
+
+    stagedFiles.forEach((file) => {
+      let statusSymbol = '';
+      let statusColor = '';
+
+      switch (file.status) {
+        case 'added':
+          statusSymbol = 'A';
+          statusColor = 'green';
+          break;
+        case 'modified':
+          statusSymbol = 'M';
+          statusColor = 'yellow';
+          break;
+        case 'deleted':
+          statusSymbol = 'D';
+          statusColor = 'red';
+          break;
+        case 'renamed':
+          statusSymbol = 'R';
+          statusColor = 'blue';
+          break;
+        case 'copied':
+          statusSymbol = 'C';
+          statusColor = 'blue';
+          break;
+        default:
+          statusSymbol = '?';
+          statusColor = 'white';
+      }
+
+      output += `${statusSymbol} ${file.path}\n`;
+    });
+
+    output += `\n› Commit   Cancel\n`;
+    output += `Press Y/y to confirm, N/n or Esc to cancel`;
+
+    mockOutput = output;
+  }
   // Use StagedFilesList output as default for unhandled components
   else {
     mockOutput = `
@@ -461,6 +509,8 @@ No staged changes
         } else if (componentType === 'CommitMessageInput') {
           handleCommitMessageInputEvents(input);
         } else if (componentType === 'ConfirmationDialog') {
+          handleConfirmationDialogEvents(input);
+        } else if (componentType === 'CommitConfirmationScreen') {
           handleConfirmationDialogEvents(input);
         }
       },
