@@ -91,4 +91,18 @@ describe('CharacterCounter Component', () => {
     // Test passes if component renders without errors
     expect(true).toBe(true);
   });
+
+  it('should not show limit when not provided', () => {
+    const { lastFrame } = render(<CharacterCounter current={25} />);
+
+    expect(lastFrame()).not.toContain('/');
+  });
+
+  it('should not show label when not provided', () => {
+    const { lastFrame: withLabel } = render(<CharacterCounter current={25} label="Label" />);
+    const { lastFrame: withoutLabel } = render(<CharacterCounter current={25} />);
+
+    expect(withLabel()).toContain('Label');
+    expect(withoutLabel()).not.toContain('Label');
+  });
 });
