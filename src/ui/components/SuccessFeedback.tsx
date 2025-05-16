@@ -2,16 +2,46 @@ import React from 'react';
 import { Box, Text } from './';
 import SelectInput from 'ink-select-input';
 
+/**
+ * Props for the SuccessFeedback component
+ */
 export interface SuccessFeedbackProps {
+  /** Title displayed at the top of the success message */
   title: string;
+
+  /** Main success message shown to the user */
   message: string;
+
+  /** Commit hash to display */
   commitHash: string;
+
+  /** Function called when the user dismisses the success message */
   onDismiss: () => void;
+
+  /** Optional list of suggested next steps to show to the user */
   nextSteps?: string[];
 }
 
 /**
  * Component for displaying success feedback after a commit
+ *
+ * This component shows a success message with the commit hash and optional
+ * next steps for the user after a successful commit operation. It includes
+ * a dismiss button to close the feedback message.
+ *
+ * @example
+ * ```tsx
+ * <SuccessFeedback
+ *   title="Commit Successful"
+ *   message="Your changes have been committed"
+ *   commitHash="abc1234"
+ *   nextSteps={[
+ *     'Push your changes with "git push"',
+ *     'Create a new branch with "git checkout -b new-branch"'
+ *   ]}
+ *   onDismiss={() => console.log('Dismissed')}
+ * />
+ * ```
  */
 const SuccessFeedback: React.FC<SuccessFeedbackProps> = ({
   title,

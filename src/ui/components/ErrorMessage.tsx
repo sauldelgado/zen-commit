@@ -3,14 +3,48 @@ import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
 import { ErrorResult } from '@utils/error-types';
 
+/**
+ * Props for the ErrorMessage component
+ */
 export interface ErrorMessageProps {
+  /** The error result object containing error details */
   error: ErrorResult;
+
+  /** Function called when the user dismisses the error message */
   onDismiss: () => void;
+
+  /** Optional function called when the user chooses to retry the operation */
   onRetry?: () => void;
 }
 
 /**
  * Component for displaying error messages with suggestions and actions
+ *
+ * This component shows a formatted error message with appropriate styling based on
+ * the error type. It displays the error message, error type, optional details,
+ * and suggestions for resolving the error. It also provides action buttons that
+ * allow the user to retry (if the error is recoverable) or dismiss the error.
+ *
+ * Error types are visually distinguished by color:
+ * - git errors: yellow
+ * - validation errors: blue
+ * - config errors: magenta
+ * - other/unknown errors: red
+ *
+ * @example
+ * ```tsx
+ * <ErrorMessage
+ *   error={{
+ *     type: 'git',
+ *     message: 'Failed to commit changes',
+ *     details: 'No changes added to commit',
+ *     suggestions: ['Stage changes with git add'],
+ *     recoverable: true
+ *   }}
+ *   onDismiss={() => setShowError(false)}
+ *   onRetry={() => retryOperation()}
+ * />
+ * ```
  */
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, onDismiss, onRetry }) => {
   // Determine error color based on type
