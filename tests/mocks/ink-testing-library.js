@@ -339,6 +339,31 @@ Directory
     }
   }
 
+  // Special handling for ConfirmationDialog component
+  else if (componentType === 'ConfirmationDialog') {
+    const props = elementProps;
+    const title = props?.title || 'Confirm';
+    const message = props?.message || 'Are you sure?';
+    const confirmText = props?.confirmText || 'Yes';
+    const cancelText = props?.cancelText || 'No';
+
+    let output = `${title}\n${message}\n\n`;
+
+    // Add content if provided
+    if (props?.content) {
+      if (typeof props.content === 'string') {
+        output += `${props.content}\n\n`;
+      } else if (props.content.props && props.content.props.children) {
+        output += `Additional content goes here\n\n`;
+      }
+    }
+
+    output += `› ${confirmText}   ${cancelText}\n`;
+    output += `Press Y/y to confirm, N/n or Esc to cancel`;
+
+    mockOutput = output;
+  }
+
   // Use StagedFilesList output as default for unhandled components
   else {
     mockOutput = `
@@ -406,6 +431,21 @@ No staged changes
     }
   };
 
+  // Handle confirmation dialog events
+  const handleConfirmationDialogEvents = (input) => {
+    if (!elementProps) return;
+
+    if (input === 'y' || input === 'Y' || input === '\r') {
+      if (elementProps.onConfirm) {
+        elementProps.onConfirm();
+      }
+    } else if (input === 'n' || input === 'N' || input === '\t\r') {
+      if (elementProps.onCancel) {
+        elementProps.onCancel();
+      }
+    }
+  };
+
   return {
     lastFrame: () => mockOutput,
     frames: [mockOutput],
@@ -420,6 +460,8 @@ No staged changes
           handleFilterEvents(input);
         } else if (componentType === 'CommitMessageInput') {
           handleCommitMessageInputEvents(input);
+        } else if (componentType === 'ConfirmationDialog') {
+          handleConfirmationDialogEvents(input);
         }
       },
     },
