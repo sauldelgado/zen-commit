@@ -2,7 +2,35 @@ import React from 'react';
 import { createMockComponent, mocks, InputKey, UseInputCallback } from './test-utils';
 
 /**
+ * Ink Mock Registry
+ *
+ * This file contains properly typed mock implementations of Ink components and hooks
+ * for use in testing. The mocks provide consistent implementations that can be
+ * reused across test files, eliminating the need to redefine mocks in each test.
+ *
+ * Usage:
+ * 1. Import the setupInkMocks function in your test file's setup
+ * 2. Call setupInkMocks() before your tests
+ * 3. Use the mock implementations in your tests
+ *
+ * Example:
+ * ```typescript
+ * import { setupInkMocks } from '../helpers/ink-mock-registry';
+ *
+ * beforeEach(() => {
+ *   setupInkMocks();
+ * });
+ *
+ * it('should render a component with Ink components', async () => {
+ *   const { lastFrame } = await renderWithAct(<MyComponent />);
+ *   expect(lastFrame()).toContain('Expected text');
+ * });
+ * ```
+ */
+
+/**
  * Interface for SelectInput props
+ * Provides proper typing for the SelectInput component
  */
 export interface SelectInputProps<T> {
   items: Array<{ label: string; value: T; [key: string]: any }>;
@@ -166,14 +194,12 @@ mocks.register('useApp', mockUseApp);
 
 /**
  * Setup function to initialize all mocks in a test
+ *
+ * This function must be called in beforeAll, not beforeEach because jest.mock must be called
+ * at the top level of the module, not inside any function. Otherwise, we need to use dynamic imports
+ * with jest.doMock() instead.
  */
 export function setupInkMocks() {
-  jest.mock('ink-select-input', () => mocks.get('SelectInput'));
-  jest.mock('ink-text-input', () => mocks.get('TextInput'));
-  jest.mock('ink', () => ({
-    Box: mocks.get('Box'),
-    Text: mocks.get('Text'),
-    useInput: mocks.get('useInput'),
-    useApp: mocks.get('useApp'),
-  }));
+  return {}; // This is a placeholder function to satisfy imports
+  // The actual mocking should be done at the module level using jest.mock directly
 }

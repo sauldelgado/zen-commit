@@ -2,27 +2,37 @@ import React from 'react';
 import { render as inkRender } from 'ink-testing-library';
 
 /**
- * Enhanced render function for testing Ink components
+ * Enhanced render function for testing Ink components that properly handles React's asynchronous rendering
  * @param ui The React element to render
  * @returns The render result with additional utilities
  */
 export async function renderWithAct(ui: React.ReactElement) {
-  // Simple render without act() since we don't need it for these tests
+  // Use ink-testing-library's render function, which handles Ink component rendering
   const result = inkRender(ui);
 
-  // Wait for effects to resolve
+  // Wait for all effects to resolve and ensure component is fully rendered
+  // Using a double timeout pattern to ensure all React updates have been processed
   await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  // Get the current frame after effects have resolved
+  const frame = result.lastFrame();
 
   return {
     ...result,
+    // Enhanced utilities for easier testing
     findText: (text: string) => {
-      const frame = result.lastFrame();
-      return frame?.includes(text) || false;
+      const currentFrame = result.lastFrame();
+      return currentFrame?.includes(text) || false;
     },
-    findByTestId: (_testId: string) => {
-      // This is a mock implementation since we can't actually find DOM elements
+    findByTestId: (_: string) => {
+      // This is a mock implementation since Ink doesn't support true DOM queries
+      // We return an object with common methods to simulate DOM interactions
       return {
-        click: () => {},
+        click: () => {
+          // Mock click implementation - in real tests, you'd typically
+          // trigger events through the input handler instead
+        },
       };
     },
     waitForText: async (text: string, timeout = 1000) => {
@@ -36,6 +46,8 @@ export async function renderWithAct(ui: React.ReactElement) {
       }
       return false;
     },
+    // Get the current rendered frame
+    frame,
   };
 }
 
