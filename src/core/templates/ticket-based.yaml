@@ -1,0 +1,45 @@
+name: Ticket-based
+description: Format for issue/ticket tracking workflows
+fields:
+  - name: ticket
+    label: Ticket Number
+    type: text
+    pattern: '[A-Z0-9]+-[0-9]+'
+    required: true
+    hint: Enter the ticket ID (e.g. JIRA-123, ISSUE-456)
+    
+  - name: type
+    label: Type
+    type: select
+    required: true
+    options:
+      - label: Feature
+        value: feat
+      - label: Bug Fix
+        value: fix
+      - label: Documentation
+        value: docs
+      - label: Refactoring
+        value: refactor
+      - label: Tests
+        value: test
+      - label: Chore
+        value: chore
+        
+  - name: description
+    label: Description
+    type: text
+    required: true
+    hint: Write a short description of the change
+    
+  - name: body
+    label: Body
+    type: multiline
+    required: false
+    hint: Provide more detailed explanation if needed
+    
+format: '{ticket} {type}: {description}
+
+{body}'
+optionalFormat:
+  body: '{ticket} {type}: {description}'

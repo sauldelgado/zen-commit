@@ -1,0 +1,20 @@
+name: Simple
+description: A simple commit message format with subject and body
+fields:
+  - name: subject
+    label: Subject
+    type: text
+    required: true
+    hint: Write a concise summary of your changes
+    
+  - name: body
+    label: Body
+    type: multiline
+    required: false
+    hint: Provide more detailed explanation if needed
+    
+format: '{subject}
+
+{body}'
+optionalFormat:
+  body: '{subject}'
