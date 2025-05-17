@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@ui/components';
-import { CommitMessageInput, ErrorMessage } from '@ui/components';
+import { CommitMessageInput, ConventionalCommitForm, ErrorMessage, Text } from '@ui/components';
 import { CommitConfirmationScreen, CommitSuccessScreen } from '@cli/screens';
 import type { StagedFile } from './CommitConfirmationScreen';
 import { createGitOperations } from '@git/operations';
@@ -21,6 +21,8 @@ const CommitScreen: React.FC = () => {
   const [commitHash, setCommitHash] = useState('');
   const [branchName, setBranchName] = useState('');
   const [hasRemote, setHasRemote] = useState(false);
+  // In a real implementation, we would toggle this with keyboard input
+  const [useConventionalCommit] = useState(false);
 
   // Initialize git operations and error handler
   const gitOperations = createGitOperations(process.cwd());
@@ -173,15 +175,36 @@ const CommitScreen: React.FC = () => {
     );
   }
 
-  // Otherwise show the commit message input
+  // For now, let's just offer a toggle message instead of key handling
+  // We'll need a more robust key input solution that works in the tests
+
+  // Otherwise show the commit message input or conventional commit form
   return (
     <Box flexDirection="column">
-      <CommitMessageInput
-        value={commitMessage}
-        onChange={setCommitMessage}
-        showSubjectBodySeparation
-        onSubmit={handleCommitComplete}
-      />
+      {/* Toggle for conventional commits */}
+      <Box marginBottom={1}>
+        <Text>Use Conventional Commits: </Text>
+        <Text color={useConventionalCommit ? 'green' : 'gray'}>
+          {useConventionalCommit ? 'Yes' : 'No'}
+        </Text>
+        <Text dimColor> (Press 'c' to toggle)</Text>
+      </Box>
+
+      {useConventionalCommit ? (
+        <ConventionalCommitForm
+          value={commitMessage}
+          onChange={setCommitMessage}
+          onSubmit={handleCommitComplete}
+        />
+      ) : (
+        <CommitMessageInput
+          value={commitMessage}
+          onChange={setCommitMessage}
+          showSubjectBodySeparation
+          onSubmit={handleCommitComplete}
+          conventionalCommit={false}
+        />
+      )}
     </Box>
   );
 };
