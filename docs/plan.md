@@ -49,7 +49,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 2     | 2.3.2 | Error handling system               | Completed   | [#19](https://github.com/sauldelgado/zen-commit/pull/19) |
 | 2     | 2.3.3 | Success feedback UI                 | Completed   | [#19](https://github.com/sauldelgado/zen-commit/pull/19) |
 | 2     | 2.3.4 | Test coverage completion            | Completed   | [#20](https://github.com/sauldelgado/zen-commit/pull/20) |
-| 3     | 3.1.1 | Conventional commits implementation | Not Started |                                                          |
+| 3     | 3.1.1 | Conventional commits implementation | Completed   | [#21](https://github.com/sauldelgado/zen-commit/pull/21) |
 | 3     | 3.1.2 | Custom template definition          | Not Started |                                                          |
 | 3     | 3.1.3 | Template selection UI               | Not Started |                                                          |
 | 3     | 3.2.1 | Pattern detection engine            | Not Started |                                                          |
