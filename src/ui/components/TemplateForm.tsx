@@ -6,7 +6,7 @@ import { useInput } from 'ink';
 import { TemplateDefinition, TemplateField, applyTemplate } from '@core/template-definition';
 import { TemplateFormSelectItem } from './TemplateFormSelect';
 
-interface TemplateFormProps {
+export interface TemplateFormProps {
   /** Template definition to use for the form */
   template: TemplateDefinition;
   /** Current field values */
