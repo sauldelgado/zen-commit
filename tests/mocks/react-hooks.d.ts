@@ -6,3 +6,13 @@ export function renderHook<T>(callback: () => T): {
 };
 
 export function act(callback: () => void): void;
+
+// Add global type for useInput callback
+declare global {
+  interface Window {
+    __useInputCallback?: (
+      input: string,
+      key: { escape?: boolean; return?: boolean; tab?: boolean },
+    ) => void;
+  }
+}
