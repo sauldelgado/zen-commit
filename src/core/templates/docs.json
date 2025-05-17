@@ -1,0 +1,35 @@
+{
+  "name": "Documentation",
+  "description": "Update documentation",
+  "fields": [
+    {
+      "name": "type",
+      "label": "Type",
+      "type": "text",
+      "required": true,
+      "default": "docs"
+    },
+    {
+      "name": "scope",
+      "label": "Scope",
+      "type": "text",
+      "required": false,
+      "hint": "Section of documentation (readme, api, etc.)"
+    },
+    {
+      "name": "description",
+      "label": "Description",
+      "type": "text",
+      "required": true,
+      "hint": "Brief description of documentation changes"
+    },
+    {
+      "name": "body",
+      "label": "Body",
+      "type": "multiline",
+      "required": false,
+      "hint": "Detailed description of what was updated"
+    }
+  ],
+  "format": "{type}({scope}): {description}\n\n{body}"
+}

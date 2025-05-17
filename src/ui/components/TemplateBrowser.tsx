@@ -6,7 +6,7 @@ import { TemplateManager } from '@core/template-manager';
 import TemplateSelector from './TemplateSelector';
 import TemplateForm from './TemplateForm';
 
-interface TemplateBrowserProps {
+export interface TemplateBrowserProps {
   /** Whether templates are currently loading */
   loading?: boolean;
   /** Template manager instance */

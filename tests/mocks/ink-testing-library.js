@@ -645,6 +645,13 @@ No staged changes
   };
 };
 
+// Simple act function for tests
+const mockAct = async (callback) => {
+  await callback();
+  return Promise.resolve();
+};
+
 module.exports = {
   render: mockRender,
+  act: mockAct,
 };

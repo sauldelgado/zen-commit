@@ -71,13 +71,21 @@ export function createTemplateManager(options: TemplateManagerOptions): Template
         const templates: TemplateDefinition[] = [];
 
         for (const file of files) {
-          if (path.extname(file) === '.yaml' || path.extname(file) === '.yml') {
+          const ext = path.extname(file);
+          if (ext === '.yaml' || ext === '.yml' || ext === '.json') {
             const filePath = path.join(options.builtInTemplatesDir, file);
             const content = await fs.promises.readFile(filePath, 'utf8');
 
             try {
-              const template = parseTemplate(content);
-              templates.push(template);
+              if (ext === '.json') {
+                // Parse JSON directly
+                const template = JSON.parse(content) as TemplateDefinition;
+                templates.push(template);
+              } else {
+                // Use YAML parser for .yaml and .yml files
+                const template = parseTemplate(content);
+                templates.push(template);
+              }
             } catch (error) {
               console.error(`Error parsing template ${file}:`, error);
             }
@@ -104,13 +112,21 @@ export function createTemplateManager(options: TemplateManagerOptions): Template
         const templates: TemplateDefinition[] = [];
 
         for (const file of files) {
-          if (path.extname(file) === '.yaml' || path.extname(file) === '.yml') {
+          const ext = path.extname(file);
+          if (ext === '.yaml' || ext === '.yml' || ext === '.json') {
             const filePath = path.join(options.userTemplatesDir, file);
             const content = await fs.promises.readFile(filePath, 'utf8');
 
             try {
-              const template = parseTemplate(content);
-              templates.push(template);
+              if (ext === '.json') {
+                // Parse JSON directly
+                const template = JSON.parse(content) as TemplateDefinition;
+                templates.push(template);
+              } else {
+                // Use YAML parser for .yaml and .yml files
+                const template = parseTemplate(content);
+                templates.push(template);
+              }
             } catch (error) {
               console.error(`Error parsing user template ${file}:`, error);
             }

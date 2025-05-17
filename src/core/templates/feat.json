@@ -1,0 +1,35 @@
+{
+  "name": "Feature",
+  "description": "Add a new feature",
+  "fields": [
+    {
+      "name": "type",
+      "label": "Type",
+      "type": "text",
+      "required": true,
+      "default": "feat"
+    },
+    {
+      "name": "scope",
+      "label": "Scope",
+      "type": "text",
+      "required": false,
+      "hint": "Component affected (ui, core, etc.)"
+    },
+    {
+      "name": "description",
+      "label": "Description",
+      "type": "text",
+      "required": true,
+      "hint": "Brief description of the new feature"
+    },
+    {
+      "name": "body",
+      "label": "Body",
+      "type": "multiline",
+      "required": false,
+      "hint": "Detailed description of the feature"
+    }
+  ],
+  "format": "{type}({scope}): {description}\n\n{body}"
+}

@@ -45,3 +45,6 @@ export type { ConfirmationDialogProps } from './ConfirmationDialog';
 export type { ErrorMessageProps } from './ErrorMessage';
 export type { SuccessFeedbackProps } from './SuccessFeedback';
 export type { ConventionalCommitFormProps } from './ConventionalCommitForm';
+export type { TemplateSelectorProps } from './TemplateSelector';
+export type { TemplateFormProps } from './TemplateForm';
+export type { TemplateBrowserProps } from './TemplateBrowser';
