@@ -11,23 +11,50 @@ import {
   ConventionalCommit,
 } from '@core/conventional-commits';
 
+/**
+ * Props for the ConventionalCommitForm component
+ *
+ * @property value - The current commit message value
+ * @property onChange - Callback function invoked when the commit message changes
+ * @property onSubmit - Optional callback function invoked when the form is submitted
+ */
 export interface ConventionalCommitFormProps {
+  /** The current commit message value */
   value: string;
+  /** Callback function invoked when the commit message changes */
   onChange: (value: string) => void;
+  /** Optional callback function invoked when the form is submitted */
   onSubmit?: () => void;
 }
 
+/**
+ * Represents the various fields that can be focused in the form
+ */
 type FocusableField = 'type' | 'scope' | 'breaking' | 'description' | 'body' | 'footer' | 'none';
 
 /**
  * Form component for creating commits following the Conventional Commits specification
+ *
+ * This component provides a structured interface for creating conventional commit messages
+ * with proper format validation according to the specification. It includes:
+ *
+ * - Type selection from predefined conventional commit types
+ * - Optional scope specification
+ * - Breaking change indication
+ * - Description input
+ * - Optional body for detailed explanation
+ * - Optional footer for metadata and breaking change notes
+ * - Real-time validation and preview
  */
 const ConventionalCommitForm: React.FC<ConventionalCommitFormProps> = ({
   value,
   onChange,
   onSubmit,
 }) => {
-  // Initialize state from the provided value
+  /**
+   * Initialize the commit state from the provided value or with defaults
+   * for a new conventional commit
+   */
   const initialCommit = value
     ? parseConventionalCommit(value)
     : {
@@ -40,19 +67,36 @@ const ConventionalCommitForm: React.FC<ConventionalCommitFormProps> = ({
         isValid: true,
       };
 
+  /**
+   * State for the current commit being edited
+   */
   const [commit, setCommit] = useState<ConventionalCommit>(initialCommit);
+
+  /**
+   * State tracking which field is currently focused for editing
+   */
   const [focusedField, setFocusedField] = useState<FocusableField>('type');
 
-  // Format commit object to string whenever it changes
+  /**
+   * Effect to format and propagate changes to the parent component
+   * whenever the commit object changes
+   */
   useEffect(() => {
     const formatted = formatConventionalCommit(commit);
     onChange(formatted);
   }, [commit, onChange]);
 
-  // Validate commit and show errors/warnings
+  /**
+   * Validation results for the current commit
+   */
   const validation = validateConventionalCommit(commit);
 
-  // Update commit object when a field changes
+  /**
+   * Updates a field in the commit object
+   *
+   * @param field - The field name to update
+   * @param value - The new value for the field
+   */
   const updateCommit = (field: keyof ConventionalCommit, value: string | boolean) => {
     setCommit((prev) => ({
       ...prev,
@@ -60,13 +104,20 @@ const ConventionalCommitForm: React.FC<ConventionalCommitFormProps> = ({
     }));
   };
 
-  // Commit type selector options
+  /**
+   * Options for the type selector based on valid conventional commit types
+   */
   const typeOptions = VALID_COMMIT_TYPES.map((type) => ({
     label: type,
     value: type,
   }));
 
-  // Handle field navigation
+  /**
+   * Determines the next field to focus based on the current field
+   *
+   * @param current - The currently focused field
+   * @returns The next field to focus, or 'none' if at the end
+   */
   const nextField = (current: FocusableField): FocusableField => {
     const fieldOrder: FocusableField[] = [
       'type',
@@ -85,7 +136,11 @@ const ConventionalCommitForm: React.FC<ConventionalCommitFormProps> = ({
     return fieldOrder[currentIndex + 1];
   };
 
-  // Handle field submission (move to next field)
+  /**
+   * Handles field submission and navigation between fields
+   *
+   * @param field - The field that was submitted
+   */
   const handleFieldSubmit = (field: FocusableField) => {
     const next = nextField(field);
 
@@ -97,7 +152,9 @@ const ConventionalCommitForm: React.FC<ConventionalCommitFormProps> = ({
     }
   };
 
-  // Toggle breaking change
+  /**
+   * Toggles the breaking change flag and moves to the next field
+   */
   const toggleBreakingChange = () => {
     updateCommit('isBreakingChange', !commit.isBreakingChange);
     handleFieldSubmit('breaking');

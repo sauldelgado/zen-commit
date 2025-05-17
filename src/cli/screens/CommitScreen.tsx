@@ -21,8 +21,7 @@ const CommitScreen: React.FC = () => {
   const [commitHash, setCommitHash] = useState('');
   const [branchName, setBranchName] = useState('');
   const [hasRemote, setHasRemote] = useState(false);
-  // In a real implementation, we would toggle this with keyboard input
-  const [useConventionalCommit] = useState(false);
+  const [useConventionalCommit, setUseConventionalCommit] = useState(false);
 
   // Initialize git operations and error handler
   const gitOperations = createGitOperations(process.cwd());
@@ -175,8 +174,51 @@ const CommitScreen: React.FC = () => {
     );
   }
 
-  // For now, let's just offer a toggle message instead of key handling
-  // We'll need a more robust key input solution that works in the tests
+  // Handle keyboard input for toggling conventional commit mode
+  useEffect(() => {
+    let isActive = true;
+
+    // Using process.stdin directly for keyboard input
+    const handleKeyPress = (
+      _str: string,
+      key: { name: string; ctrl: boolean; meta: boolean; shift: boolean },
+    ) => {
+      if (!isActive) return;
+
+      // Toggle conventional commit mode when 'c' is pressed
+      if (key.name === 'c' && !key.ctrl && !key.meta) {
+        setUseConventionalCommit((prev) => !prev);
+      }
+    };
+
+    try {
+      // Register keypress handler if we have access to stdin and it's a TTY
+      if (process.stdin.isTTY) {
+        // Make sure raw mode is enabled to capture individual keypresses
+        if (process.stdin.setRawMode) {
+          process.stdin.setRawMode(true);
+        }
+
+        // Handle keypress events
+        process.stdin.on('keypress', handleKeyPress);
+      }
+    } catch (err) {
+      // Silently handle errors - this might happen in test environments
+      // or when no TTY is available
+    }
+
+    // Clean up event listener when component unmounts
+    return () => {
+      isActive = false;
+      try {
+        if (process.stdin.isTTY) {
+          process.stdin.off('keypress', handleKeyPress);
+        }
+      } catch (err) {
+        // Silently handle cleanup errors
+      }
+    };
+  }, []);
 
   // Otherwise show the commit message input or conventional commit form
   return (
