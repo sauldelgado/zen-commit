@@ -18,6 +18,11 @@ export { default as CharacterCounter } from './CharacterCounter';
 export { default as ConfirmationDialog } from './ConfirmationDialog';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as SuccessFeedback } from './SuccessFeedback';
+export { default as TemplateSelector } from './TemplateSelector';
+export { default as TemplateForm } from './TemplateForm';
+export { default as TemplateBrowser } from './TemplateBrowser';
+export { TemplateSelectItem } from './TemplateSelect';
+export { TemplateFormSelectItem } from './TemplateFormSelect';
 
 // Export types
 export type { BoxProps } from './Box';

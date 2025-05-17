@@ -1,5 +1,5 @@
-name: Conventional Commits
-description: Format following the Conventional Commits specification
+name: Conventional
+description: Conventional Commits format
 fields:
   - name: type
     label: Type
@@ -8,77 +8,51 @@ fields:
     options:
       - label: Feature
         value: feat
-      - label: Bug Fix
+      - label: Fix
         value: fix
       - label: Documentation
         value: docs
-      - label: Styles
+      - label: Style
         value: style
-      - label: Refactoring
+      - label: Refactor
         value: refactor
+      - label: Test
+        value: test
+      - label: Chore
+        value: chore
       - label: Performance
         value: perf
-      - label: Tests
-        value: test
-      - label: Build System
+      - label: Build
         value: build
       - label: CI
         value: ci
-      - label: Chore
-        value: chore
-      - label: Revert
-        value: revert
-    hint: Select the type of change
-    
+  
   - name: scope
     label: Scope
     type: text
     required: false
-    hint: The scope of the change (e.g., component or file name)
-    
-  - name: isBreaking
-    label: Breaking Change
-    type: select
-    required: true
-    options:
-      - label: No
-        value: 'false'
-      - label: Yes
-        value: 'true'
-    default: 'false'
-    
+    hint: Component affected (e.g. auth, api)
+  
   - name: description
     label: Description
     type: text
     required: true
-    hint: Write a short, imperative tense description of the change
-    
+    hint: Brief description of the change
+
   - name: body
     label: Body
     type: multiline
     required: false
-    hint: Provide a longer description, explain the motivation and context
-    
-  - name: footer
-    label: Footer
-    type: multiline
+    hint: Detailed explanation of the change
+
+  - name: breakingChange
+    label: Breaking Change
+    type: text
     required: false
-    hint: Add references to issues, BREAKING CHANGE notes, etc.
-    
-format: '{type}({scope})!: {description}
+    hint: Description of breaking changes, if any
 
-{body}
-
-{footer}'
+format: '{type}({scope}): {description}\n\n{body}\n\n{breakingChange}'
 optionalFormat:
-  scope: '{type}: {description}
-
-{body}
-
-{footer}'
-  body: '{type}({scope})!: {description}
-
-{footer}'
-  footer: '{type}({scope})!: {description}
-
-{body}'
+  scope: '{type}: {description}\n\n{body}\n\n{breakingChange}'
+  body: '{type}({scope}): {description}\n\n{breakingChange}'
+  breakingChange: '{type}({scope}): {description}\n\n{body}'

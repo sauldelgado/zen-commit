@@ -52,6 +52,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 3     | 3.1.1 | Conventional commits implementation | Completed   | [#21](https://github.com/sauldelgado/zen-commit/pull/21) |
 | 3     | 3.1.2 | Custom template definition          | Completed   | [#22](https://github.com/sauldelgado/zen-commit/pull/22) |
 | 3     | 3.1.3 | Template selection UI               | Not Started |                                                          |
+| 3     | 3.1.4 | Testing infrastructure improvements | Not Started |                                                          |
 | 3     | 3.2.1 | Pattern detection engine            | Not Started |                                                          |
 | 3     | 3.2.2 | Warning notification system         | Not Started |                                                          |
 | 3     | 3.2.3 | Override controls                   | Not Started |                                                          |
@@ -228,6 +229,11 @@ This phase adds features that improve the commit workflow.
       - Template browsing interface
       - Quick selection mechanism
       - Template preview
+
+   4. **Testing infrastructure improvements** [details in `docs/steps/3.1.4-testing-infrastructure-improvements.md`]
+      - Modernize test mocking system
+      - Fix function component testing
+      - Improve type safety
    
 2. **Common Patterns Detection**
    1. **Pattern detection engine** [details in `docs/steps/3.2.1-pattern-detection-engine.md`]
