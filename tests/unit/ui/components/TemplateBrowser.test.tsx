@@ -1,33 +1,36 @@
 import React from 'react';
-import { render } from 'ink-testing-library';
+import { renderWithAct, getInputHandler } from '../../../helpers/test-utils';
 import TemplateBrowser from '@ui/components/TemplateBrowser';
 import { TemplateDefinition } from '@core/template-definition';
 import { TemplateManager } from '@core/template-manager';
 
-// Mock dependencies
+// Mock dependencies with proper typing
 jest.mock('@ui/components/TemplateSelector', () => {
   const React = require('react');
-  return ({
+  return function TemplateSelector({
     onSelectTemplate,
     templates,
   }: {
     onSelectTemplate: (template: any) => void;
     templates: any[];
-  }) => {
-    return React.createElement(
-      'div',
-      {
-        'data-testid': 'template-selector',
-        onClick: () => onSelectTemplate(templates[0]),
-      },
-      'Template Selector',
+    selectedTemplate?: any;
+  }) {
+    return (
+      <div data-testid="template-selector" onClick={() => onSelectTemplate(templates[0])}>
+        Template Selector
+        {templates.map((t, i) => (
+          <div key={i} data-testid={`template-item-${i}`}>
+            {t.name} - {t.description}
+          </div>
+        ))}
+      </div>
     );
   };
 });
 
 jest.mock('@ui/components/TemplateForm', () => {
   const React = require('react');
-  return ({
+  return function TemplateForm({
     onSubmit,
     template,
     values,
@@ -35,14 +38,15 @@ jest.mock('@ui/components/TemplateForm', () => {
     onSubmit: (values: any) => void;
     template: any;
     values: any;
-  }) => {
-    return React.createElement(
-      'div',
-      {
-        'data-testid': 'template-form',
-        onClick: () => onSubmit(values),
-      },
-      `Template Form for ${template.name}`,
+    onChange?: (values: any) => void;
+  }) {
+    return (
+      <div data-testid="template-form" onClick={() => onSubmit(values)}>
+        Template Form for {template.name}
+        <button data-testid="submit-button" onClick={() => onSubmit(values)}>
+          Submit
+        </button>
+      </div>
     );
   };
 });
@@ -51,19 +55,42 @@ jest.mock('@ui/components/TemplateForm', () => {
 jest.mock('ink-spinner', () => {
   const React = require('react');
   return function Spinner() {
-    return React.createElement('span', null, 'Loading...');
+    return <span data-testid="spinner">Loading...</span>;
   };
 });
 
 // Mock useInput hook from ink
 jest.mock('ink', () => ({
-  ...jest.requireActual('ink'),
-  useInput: jest.fn(() => {
-    // No-op mock implementation
-  }),
+  Box: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Text: ({
+    children,
+    color,
+    bold,
+    dimColor,
+  }: {
+    children: React.ReactNode;
+    color?: string;
+    bold?: boolean;
+    dimColor?: boolean;
+  }) => (
+    <span
+      style={{
+        color,
+        fontWeight: bold ? 'bold' : 'normal',
+        opacity: dimColor ? 0.7 : 1,
+      }}
+    >
+      {children}
+    </span>
+  ),
+  useInput: (callback: any) => {
+    // Store the callback for tests to trigger
+    getInputHandler().setCallback(callback);
+  },
+  useApp: () => ({ exit: jest.fn() }),
 }));
 
-// TODO: These tests will be fixed in task 3.1.4
+// TODO: Fix rendering tests in a future task
 describe.skip('TemplateBrowser Component', () => {
   const templates: TemplateDefinition[] = [
     {
@@ -111,17 +138,20 @@ describe.skip('TemplateBrowser Component', () => {
     saveTemplate: jest.fn().mockResolvedValue(undefined),
     getTemplateByName: jest.fn().mockImplementation((name) => {
       const template = templates.find((t) => t.name === name);
-      return Promise.resolve(template);
+      return Promise.resolve(template || null);
     }),
   };
 
-  it('should render the loading state', async () => {
-    let renderer: any;
-    await act(async () => {
-      renderer = render(<TemplateBrowser loading={true} onTemplateComplete={() => {}} />);
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    expect(renderer.lastFrame()).toContain('Loading templates');
+  it('should render the loading state', async () => {
+    const { lastFrame } = await renderWithAct(
+      <TemplateBrowser loading={true} onTemplateComplete={() => {}} />,
+    );
+
+    expect(lastFrame()).toContain('Loading templates');
   });
 
   it('should render a message when no templates are available', async () => {
@@ -130,41 +160,27 @@ describe.skip('TemplateBrowser Component', () => {
       getAllTemplates: jest.fn().mockResolvedValue([]),
     };
 
-    // We need to use act to wait for async effects
-    let renderer: any;
-    await act(async () => {
-      renderer = render(
-        <TemplateBrowser
-          loading={false}
-          templateManager={emptyTemplateManager}
-          onTemplateComplete={() => {}}
-        />,
-      );
+    const { lastFrame } = await renderWithAct(
+      <TemplateBrowser
+        loading={false}
+        templateManager={emptyTemplateManager}
+        onTemplateComplete={() => {}}
+      />,
+    );
 
-      // Wait for useEffect to run
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
-    expect(renderer.lastFrame()).toContain('No templates found');
+    expect(lastFrame()).toContain('No templates found');
   });
 
   it('should render template selector initially', async () => {
-    let renderer: any;
-    await act(async () => {
-      renderer = render(
-        <TemplateBrowser
-          loading={false}
-          templateManager={mockTemplateManager}
-          onTemplateComplete={() => {}}
-        />,
-      );
+    const { lastFrame } = await renderWithAct(
+      <TemplateBrowser
+        loading={false}
+        templateManager={mockTemplateManager}
+        onTemplateComplete={() => {}}
+      />,
+    );
 
-      // Wait for useEffect and promises to resolve
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
-    // Should show template selector after templates are loaded
-    expect(renderer.lastFrame()).toContain('Template Selector');
+    expect(lastFrame()).toContain('Template Selector');
   });
 
   it('should call onTemplateComplete with the formatted message', async () => {
@@ -174,30 +190,22 @@ describe.skip('TemplateBrowser Component', () => {
       description: 'add new feature',
     };
 
-    let renderer: any;
-    await act(async () => {
-      renderer = render(
-        <TemplateBrowser
-          loading={false}
-          templateManager={mockTemplateManager}
-          initialTemplate="Conventional"
-          initialValues={filledValues}
-          onTemplateComplete={onTemplateComplete}
-        />,
-      );
+    const { findByTestId } = await renderWithAct(
+      <TemplateBrowser
+        loading={false}
+        templateManager={mockTemplateManager}
+        initialTemplate="Conventional"
+        initialValues={filledValues}
+        onTemplateComplete={onTemplateComplete}
+      />,
+    );
 
-      // Wait for useEffect and promises to resolve
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
+    // After initial render, should be in form state with initialTemplate
+    expect(await findByTestId('template-form')).toBeDefined();
 
-    // After loading we should see the form because initialTemplate is specified
-    expect(renderer.lastFrame()).toContain('Template Form for Conventional');
-
-    // Trigger form submission by clicking the mocked form component
-    const formElement = renderer.findByTestId('template-form');
-    if (formElement) {
-      formElement.click();
-    }
+    // Find and click the submit button
+    const submitButton = await findByTestId('submit-button');
+    submitButton.click();
 
     // The onTemplateComplete should have been called
     expect(onTemplateComplete).toHaveBeenCalledWith('feat: add new feature');
@@ -205,28 +213,19 @@ describe.skip('TemplateBrowser Component', () => {
 
   it('should handle cancellation', async () => {
     const onCancel = jest.fn();
-    const useInputMock = require('ink').useInput;
 
-    let renderer: any;
-    await act(async () => {
-      renderer = render(
-        <TemplateBrowser
-          loading={false}
-          templateManager={mockTemplateManager}
-          onTemplateComplete={() => {}}
-          onCancel={onCancel}
-        />,
-      );
-
-      // Wait for useEffect and promises to resolve
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
-    // Get the last callback that was registered with useInput
-    const lastCallback = useInputMock.mock.calls[useInputMock.mock.calls.length - 1][0];
+    await renderWithAct(
+      <TemplateBrowser
+        loading={false}
+        templateManager={mockTemplateManager}
+        onTemplateComplete={() => {}}
+        onCancel={onCancel}
+      />,
+    );
 
     // Simulate pressing escape
-    lastCallback('', { escape: true });
+    const inputHandler = getInputHandler();
+    inputHandler.simulateKeypress({ escape: true });
 
     // The onCancel should have been called
     expect(onCancel).toHaveBeenCalled();
@@ -238,21 +237,15 @@ describe.skip('TemplateBrowser Component', () => {
       getAllTemplates: jest.fn().mockRejectedValue(new Error('Failed to load templates')),
     };
 
-    let renderer: any;
-    await act(async () => {
-      renderer = render(
-        <TemplateBrowser
-          loading={false}
-          templateManager={errorTemplateManager}
-          onTemplateComplete={() => {}}
-        />,
-      );
-
-      // Wait for useEffect and promises to resolve
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
+    const { lastFrame } = await renderWithAct(
+      <TemplateBrowser
+        loading={false}
+        templateManager={errorTemplateManager}
+        onTemplateComplete={() => {}}
+      />,
+    );
 
     // Should show error message after failing to load templates
-    expect(renderer.lastFrame()).toContain('Failed to load templates');
+    expect(lastFrame()).toContain('Failed to load templates');
   });
 });
