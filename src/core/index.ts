@@ -1,2 +1,3 @@
 export * from './conventional-commits';
-// Export other core functions as they are created
+export * from './template-definition';
+export * from './template-manager';
