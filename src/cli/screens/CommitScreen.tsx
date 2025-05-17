@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@ui/components';
-import { CommitMessageInput, ConventionalCommitForm, ErrorMessage, Text } from '@ui/components';
+import {
+  CommitMessageInput,
+  ConventionalCommitForm,
+  ErrorMessage,
+  Text,
+  TemplateBrowser,
+} from '@ui/components';
 import { CommitConfirmationScreen, CommitSuccessScreen } from '@cli/screens';
 import type { StagedFile } from './CommitConfirmationScreen';
 import { createGitOperations } from '@git/operations';
 import { mapGitStatusToStagedFiles } from '@git/utils';
 import { createErrorHandler } from '@utils/errors';
 import type { ErrorResult } from '@utils/error-types';
+import { createTemplateManager } from '@core/template-manager';
+import path from 'path';
 
 /**
  * Main screen for creating a commit
@@ -22,10 +30,17 @@ const CommitScreen: React.FC = () => {
   const [branchName, setBranchName] = useState('');
   const [hasRemote, setHasRemote] = useState(false);
   const [useConventionalCommit, setUseConventionalCommit] = useState(false);
+  const [useTemplates, setUseTemplates] = useState(false);
 
   // Initialize git operations and error handler
   const gitOperations = createGitOperations(process.cwd());
   const errorHandler = createErrorHandler();
+
+  // Initialize template manager
+  const templateManager = createTemplateManager({
+    userTemplatesDir: path.join(process.env.HOME || '', '.zen-commit/templates'),
+    builtInTemplatesDir: path.join(__dirname, '../../src/core/templates'),
+  });
 
   // Load staged files and branch info when component mounts
   useEffect(() => {
@@ -129,6 +144,17 @@ const CommitScreen: React.FC = () => {
     }
   };
 
+  // Handle template completion
+  const handleTemplateComplete = (message: string) => {
+    setCommitMessage(message);
+    setUseTemplates(false);
+  };
+
+  // Handle template cancellation
+  const handleTemplateCancel = () => {
+    setUseTemplates(false);
+  };
+
   // Show error message if there is one
   if (error) {
     return (
@@ -174,7 +200,7 @@ const CommitScreen: React.FC = () => {
     );
   }
 
-  // Handle keyboard input for toggling conventional commit mode
+  // Handle keyboard input for toggling modes
   useEffect(() => {
     let isActive = true;
 
@@ -188,6 +214,18 @@ const CommitScreen: React.FC = () => {
       // Toggle conventional commit mode when 'c' is pressed
       if (key.name === 'c' && !key.ctrl && !key.meta) {
         setUseConventionalCommit((prev) => !prev);
+        // Turn off templates mode if conventional commits is enabled
+        if (!useConventionalCommit) {
+          setUseTemplates(false);
+        }
+      }
+      // Toggle templates mode when 't' is pressed
+      else if (key.name === 't' && !key.ctrl && !key.meta) {
+        setUseTemplates((prev) => !prev);
+        // Turn off conventional commits mode if templates is enabled
+        if (!useTemplates) {
+          setUseConventionalCommit(false);
+        }
       }
     };
 
@@ -218,18 +256,41 @@ const CommitScreen: React.FC = () => {
         // Silently handle cleanup errors
       }
     };
-  }, []);
+  }, [useConventionalCommit, useTemplates]);
+
+  // Show template browser if templates mode is enabled
+  if (useTemplates) {
+    return (
+      <Box flexDirection="column">
+        <Box marginBottom={1}>
+          <Text bold>Template Selection</Text>
+        </Box>
+        <TemplateBrowser
+          templateManager={templateManager}
+          onTemplateComplete={handleTemplateComplete}
+          onCancel={handleTemplateCancel}
+        />
+      </Box>
+    );
+  }
 
   // Otherwise show the commit message input or conventional commit form
   return (
     <Box flexDirection="column">
-      {/* Toggle for conventional commits */}
+      {/* Mode toggles */}
       <Box marginBottom={1}>
-        <Text>Use Conventional Commits: </Text>
-        <Text color={useConventionalCommit ? 'green' : 'gray'}>
-          {useConventionalCommit ? 'Yes' : 'No'}
-        </Text>
-        <Text dimColor> (Press 'c' to toggle)</Text>
+        <Box marginRight={3}>
+          <Text>Use Conventional Commits: </Text>
+          <Text color={useConventionalCommit ? 'green' : 'gray'}>
+            {useConventionalCommit ? 'Yes' : 'No'}
+          </Text>
+          <Text dimColor> (Press 'c' to toggle)</Text>
+        </Box>
+        <Box>
+          <Text>Use Templates: </Text>
+          <Text color={useTemplates ? 'green' : 'gray'}>{useTemplates ? 'Yes' : 'No'}</Text>
+          <Text dimColor> (Press 't' to toggle)</Text>
+        </Box>
       </Box>
 
       {useConventionalCommit ? (
