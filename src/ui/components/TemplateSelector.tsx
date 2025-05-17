@@ -1,9 +1,10 @@
 import React from 'react';
 import { Box, Text } from './';
 import SelectInput from 'ink-select-input';
+import { Component } from 'react';
 import { TemplateDefinition } from '@core/template-definition';
 
-interface TemplateSelectorProps {
+export interface TemplateSelectorProps {
   /** Array of available templates */
   templates: TemplateDefinition[];
   /** Currently selected template */
@@ -19,26 +20,28 @@ type SelectItem = {
   description?: string;
 };
 
-// Define props type for the item component
-type ItemComponentProps = {
+// Item component for template selection as a class component to satisfy type requirements
+class TemplateSelectItem extends Component<{
   isSelected: boolean;
   item: SelectItem;
-};
-
-// Item component for template selection - using function component
-const TemplateSelectItem: React.FC<ItemComponentProps> = ({ isSelected, item }) => (
-  <Box>
-    <Text color={isSelected ? 'blue' : undefined} bold={isSelected}>
-      {item.label}
-    </Text>
-    {item.description && (
-      <Text color={isSelected ? 'blue' : 'gray'} dimColor={!isSelected}>
-        {' '}
-        - {item.description}
-      </Text>
-    )}
-  </Box>
-);
+}> {
+  render() {
+    const { isSelected, item } = this.props;
+    return (
+      <Box>
+        <Text color={isSelected ? 'blue' : undefined} bold={isSelected}>
+          {item.label}
+        </Text>
+        {item.description && (
+          <Text color={isSelected ? 'blue' : 'gray'} dimColor={!isSelected}>
+            {' '}
+            - {item.description}
+          </Text>
+        )}
+      </Box>
+    );
+  }
+}
 
 /**
  * Component for selecting a commit message template
@@ -67,8 +70,6 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       </Box>
     );
   }
-
-  // Use the class component for rendering items
 
   return (
     <Box flexDirection="column" marginY={1}>

@@ -1,0 +1,35 @@
+{
+  "name": "Test",
+  "description": "Add or update tests",
+  "fields": [
+    {
+      "name": "type",
+      "label": "Type",
+      "type": "text",
+      "required": true,
+      "default": "test"
+    },
+    {
+      "name": "scope",
+      "label": "Scope",
+      "type": "text",
+      "required": false,
+      "hint": "Component being tested (ui, core, etc.)"
+    },
+    {
+      "name": "description",
+      "label": "Description",
+      "type": "text",
+      "required": true,
+      "hint": "Brief description of the test changes"
+    },
+    {
+      "name": "body",
+      "label": "Body",
+      "type": "multiline",
+      "required": false,
+      "hint": "Detailed description of what's being tested"
+    }
+  ],
+  "format": "{type}({scope}): {description}\n\n{body}"
+}
