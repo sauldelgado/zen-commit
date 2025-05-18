@@ -709,6 +709,154 @@ Press Y/y to confirm, N/n or Esc to cancel
       cleanup: jest.fn(),
     };
   }
+  // Special handling for OverrideDialog component
+  else if (componentType === 'OverrideDialog') {
+    const props = elementProps;
+    const warning = props?.warning || {
+      patternId: 'test-warning',
+      name: 'Test Warning',
+      description: 'Test description',
+    };
+
+    let isPermanent = false;
+    let reason = '';
+
+    mockOutput = `Override Warning: ${warning.name}\n${warning.description}\n`;
+
+    if (warning.matchedText) {
+      mockOutput += `Matched: "${warning.matchedText}"\n`;
+    }
+
+    mockOutput += `Reason for override: ${reason || '(No reason provided)'}\n`;
+
+    if (props.allowPermanentOverride) {
+      mockOutput += `Make this override permanent [${isPermanent ? 'X' : ' '}]\n`;
+    }
+
+    mockOutput += `[ Override ]  [ Cancel ]\nTab: Navigate | Enter: Select | Esc: Cancel`;
+
+    return {
+      lastFrame: () => mockOutput,
+      frames: [mockOutput],
+      stdin: {
+        write: (input) => {
+          // Handle text input for reason
+          if (
+            input &&
+            input.length > 1 &&
+            !input.includes('\r') &&
+            !input.includes('\t') &&
+            !input.includes('\u001b')
+          ) {
+            reason = input;
+            mockOutput = mockOutput.replace('(No reason provided)', reason);
+          }
+
+          // Handle tab key
+          if (input === '\t') {
+            // In a real dialog, this would cycle focus
+          }
+
+          // Handle enter key for different focused elements
+          else if (input === '\r') {
+            if (props.onOverride) {
+              props.onOverride(warning.patternId, reason, isPermanent);
+            }
+          }
+
+          // Handle escape key
+          else if (input === '\u001b') {
+            if (props.onCancel) {
+              props.onCancel();
+            }
+          }
+        },
+      },
+      rerender: jest.fn(),
+      unmount: jest.fn(),
+      cleanup: jest.fn(),
+    };
+  }
+  // Special handling for OverrideList component
+  else if (componentType === 'OverrideList') {
+    const props = elementProps;
+    const overrides = props?.overrides || [];
+
+    // If no overrides, return appropriate message
+    if (overrides.length === 0) {
+      mockOutput = 'Active Overrides\n\nNo active overrides';
+      return {
+        lastFrame: () => mockOutput,
+        frames: [mockOutput],
+        stdin: { write: jest.fn() },
+        rerender: jest.fn(),
+        unmount: jest.fn(),
+        cleanup: jest.fn(),
+      };
+    }
+
+    // Initialize state
+    let selectedIndex = 0;
+
+    // Build override list output
+    const getOutput = () => {
+      let output = 'Active Overrides\n\n';
+
+      overrides.forEach((override, index) => {
+        const isSelected = index === selectedIndex;
+
+        output += `${isSelected ? '> ' : '  '}${override.patternId}`;
+
+        if (override.category) {
+          output += ` (${override.category})`;
+        }
+
+        output += `\n  Reason: ${override.reason}\n`;
+
+        if (override.createdAt) {
+          const date = new Date(override.createdAt);
+          output += `  Created: ${date.toLocaleDateString()}\n`;
+        }
+
+        output += '\n';
+      });
+
+      output += '↑/↓: Navigate | R: Remove override | Esc: Close';
+
+      return output;
+    };
+
+    // Initial output
+    mockOutput = getOutput();
+
+    return {
+      lastFrame: () => getOutput(),
+      frames: [mockOutput],
+      stdin: {
+        write: (input) => {
+          // Navigate with up/down arrows
+          if (input === '\u001B[A') {
+            // Up arrow
+            selectedIndex = selectedIndex > 0 ? selectedIndex - 1 : overrides.length - 1;
+          } else if (input === '\u001B[B') {
+            // Down arrow
+            selectedIndex = selectedIndex < overrides.length - 1 ? selectedIndex + 1 : 0;
+          }
+          // Remove selected override
+          else if (input === 'r' || input === 'R') {
+            if (props.onRemoveOverride) {
+              props.onRemoveOverride(overrides[selectedIndex].patternId);
+            }
+          }
+          // Update output
+          mockOutput = getOutput();
+        },
+      },
+      rerender: jest.fn(),
+      unmount: jest.fn(),
+      cleanup: jest.fn(),
+    };
+  }
   // Use StagedFilesList output as default for unhandled components
   else {
     mockOutput = `

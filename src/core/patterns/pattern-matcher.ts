@@ -45,9 +45,25 @@ export interface PatternMatcherOptions {
  * Interface for analysis options
  */
 export interface AnalysisOptions {
+  /**
+   * Minimum severity level to include in results
+   */
   minSeverity?: PatternSeverity;
+
+  /**
+   * Category to filter patterns by
+   */
   category?: PatternCategory;
+
+  /**
+   * Whether to include disabled patterns
+   */
   includeDisabled?: boolean;
+
+  /**
+   * Specific patterns to use for analysis instead of all patterns
+   */
+  patterns?: Pattern[];
 }
 
 /**
@@ -150,17 +166,25 @@ export const createPatternMatcher = (options: PatternMatcherOptions = {}): Patte
         return { ...analysisCache.get(cacheKey)! };
       }
 
-      // Filter patterns based on options
-      let activePatterns = patterns;
+      // Use provided patterns or filter from all patterns
+      let activePatterns: Pattern[];
 
-      // Filter out disabled patterns unless explicitly requested
-      if (!analysisOptions.includeDisabled) {
-        activePatterns = activePatterns.filter((p) => !disabledPatternIds.has(p.id));
-      }
+      if (analysisOptions.patterns) {
+        // Use the patterns provided in options
+        activePatterns = analysisOptions.patterns;
+      } else {
+        // Filter patterns based on options
+        activePatterns = patterns;
 
-      // Filter by category if specified
-      if (analysisOptions.category) {
-        activePatterns = activePatterns.filter((p) => p.category === analysisOptions.category);
+        // Filter out disabled patterns unless explicitly requested
+        if (!analysisOptions.includeDisabled) {
+          activePatterns = activePatterns.filter((p) => !disabledPatternIds.has(p.id));
+        }
+
+        // Filter by category if specified
+        if (analysisOptions.category) {
+          activePatterns = activePatterns.filter((p) => p.category === analysisOptions.category);
+        }
       }
 
       // Use timeout to prevent regex from taking too long
