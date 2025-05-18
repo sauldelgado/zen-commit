@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 // We'll need to keep the mock TextInput for now
 const TextInput = (props: any) => {
   return React.createElement('input', props, null);
@@ -12,6 +12,7 @@ import WarningPanel from './WarningPanel';
 import { createPatternMatcher, PatternMatcher } from '../../core/patterns/pattern-matcher';
 import { createWarningManager } from '../../core/patterns/warning-manager';
 import { useMessageValidation } from '../hooks/useMessageValidation';
+import { debounce } from '../../utils/debounce';
 
 export interface CommitMessageInputProps {
   value: string;
@@ -63,11 +64,19 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
     subjectLengthLimit: subjectLimit,
   });
 
-  // Analyze message for patterns when it changes
-  React.useEffect(() => {
-    const analysis = effectivePatternMatcher.analyzeMessage(value);
-    warningManager.setWarnings(analysis.matches);
-  }, [value, effectivePatternMatcher, warningManager]);
+  // Create a debounced analyze function (300ms delay)
+  const debouncedAnalyze = useCallback(
+    debounce((text: string) => {
+      const analysis = effectivePatternMatcher.analyzeMessage(text);
+      warningManager.setWarnings(analysis.matches);
+    }, 300),
+    [effectivePatternMatcher, warningManager],
+  );
+
+  // Analyze message for patterns when it changes (debounced)
+  useEffect(() => {
+    debouncedAnalyze(value);
+  }, [value, debouncedAnalyze]);
 
   // Get current warnings
   const currentWarnings = warningManager.getWarnings();

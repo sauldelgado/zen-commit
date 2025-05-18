@@ -43,6 +43,7 @@
     "message-validation-js-demo": "node src/examples/message-validation-demo.js",
     "visual-feedback-demo": "ts-node src/examples/visual-feedback-demo.tsx",
     "visual-feedback-js-demo": "node src/examples/visual-feedback-demo.js",
+    "warning-notification-demo": "ts-node src/examples/warning-notification-demo.tsx",
     "ink-render-demo": "ts-node src/examples/ink-render-demo.tsx",
     "pure-ink-demo": "node src/examples/pure-ink-demo.js",
     "direct-ink-demo": "node src/examples/direct-ink-demo.js",
