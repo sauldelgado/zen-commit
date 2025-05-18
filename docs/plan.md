@@ -52,7 +52,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 3     | 3.1.1 | Conventional commits implementation | Completed   | [#21](https://github.com/sauldelgado/zen-commit/pull/21) |
 | 3     | 3.1.2 | Custom template definition          | Completed   | [#22](https://github.com/sauldelgado/zen-commit/pull/22) |
 | 3     | 3.1.3 | Template selection UI               | Completed   | [#23](https://github.com/sauldelgado/zen-commit/pull/23) |
-| 3     | 3.1.4 | Testing infrastructure improvements | Not Started |                                                          |
+| 3     | 3.1.4 | Testing infrastructure improvements | Completed   | [#25](https://github.com/sauldelgado/zen-commit/pull/25) |
 | 3     | 3.2.1 | Pattern detection engine            | Not Started |                                                          |
 | 3     | 3.2.2 | Warning notification system         | Not Started |                                                          |
 | 3     | 3.2.3 | Override controls                   | Not Started |                                                          |
