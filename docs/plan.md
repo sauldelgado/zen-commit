@@ -55,7 +55,7 @@ This implementation plan is organized into phases, each containing multiple step
 | 3     | 3.1.4 | Testing infrastructure improvements | Completed   | [#25](https://github.com/sauldelgado/zen-commit/pull/25) |
 | 3     | 3.2.1 | Pattern detection engine            | Completed   | [#26](https://github.com/sauldelgado/zen-commit/pull/26) |
 | 3     | 3.2.2 | Warning notification system         | Completed   | [#29](https://github.com/sauldelgado/zen-commit/pull/29) |
-| 3     | 3.2.3 | Override controls                   | Completed   | In Progress                                              |
+| 3     | 3.2.3 | Override controls                   | Completed   | [#30](https://github.com/sauldelgado/zen-commit/pull/30) |
 | 3     | 3.3.1 | Configuration file parser           | Not Started |                                                          |
 | 3     | 3.3.2 | Configuration schema definition     | Not Started |                                                          |
 | 3     | 3.3.3 | Per-project settings implementation | Not Started |                                                          |
