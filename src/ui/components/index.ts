@@ -21,6 +21,8 @@ export { default as SuccessFeedback } from './SuccessFeedback';
 export { default as TemplateSelector } from './TemplateSelector';
 export { default as TemplateForm } from './TemplateForm';
 export { default as TemplateBrowser } from './TemplateBrowser';
+export { default as WarningNotification } from './WarningNotification';
+export { default as WarningPanel } from './WarningPanel';
 export { TemplateSelectItem } from './TemplateSelect';
 export { TemplateFormSelectItem } from './TemplateFormSelect';
 
@@ -48,3 +50,5 @@ export type { ConventionalCommitFormProps } from './ConventionalCommitForm';
 export type { TemplateSelectorProps } from './TemplateSelector';
 export type { TemplateFormProps } from './TemplateForm';
 export type { TemplateBrowserProps } from './TemplateBrowser';
+export type { WarningNotificationProps } from './WarningNotification';
+export type { WarningPanelProps } from './WarningPanel';
