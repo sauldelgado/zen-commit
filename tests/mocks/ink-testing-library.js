@@ -316,6 +316,14 @@ Directory
     const placeholder = props?.placeholder || 'Enter a commit message...';
     const showSubjectBodySeparation = props?.showSubjectBodySeparation || false;
     const subjectLimit = props?.subjectLimit || 50;
+    const patternMatcher = props?.patternMatcher;
+
+    // Check if we need to show warning panel
+    let hasWarnings = false;
+    if (patternMatcher && patternMatcher.analyzeMessage) {
+      const analysis = patternMatcher.analyzeMessage(value);
+      hasWarnings = analysis.matches && analysis.matches.length > 0;
+    }
 
     if (showSubjectBodySeparation) {
       const lines = value.split('\n');
@@ -333,9 +341,21 @@ Directory
       output += '\n\nBody:\n';
       output += body || 'No body';
 
+      // Add warning panel if needed
+      if (hasWarnings) {
+        output += '\n\n1 issue detected in commit message';
+      }
+
       mockOutput = output;
     } else {
-      mockOutput = `Commit message:\n${value || placeholder}`;
+      let output = `Commit message:\n${value || placeholder}`;
+
+      // Add warning panel if needed
+      if (hasWarnings) {
+        output += '\n\n1 issue detected in commit message';
+      }
+
+      mockOutput = output;
     }
   }
 
@@ -535,6 +555,159 @@ Press Y/y to confirm, N/n or Esc to cancel
     } else {
       mockOutput = `${current}`;
     }
+  }
+  // Special handling for WarningNotification component
+  else if (componentType === 'WarningNotification') {
+    const props = elementProps;
+    const warnings = props?.warnings || [];
+    const dismissible = props?.dismissible || false;
+
+    // If no warnings, return empty string
+    if (warnings.length === 0) {
+      mockOutput = '';
+      return {
+        lastFrame: () => mockOutput,
+        frames: [mockOutput],
+        stdin: { write: jest.fn() },
+        rerender: jest.fn(),
+        unmount: jest.fn(),
+        cleanup: jest.fn(),
+      };
+    }
+
+    // Build warning output
+    let output = `${warnings.length} issue${warnings.length === 1 ? '' : 's'} detected in commit message\n\n`;
+
+    warnings.forEach((warning) => {
+      const severityIcon =
+        warning.severity === 'error' ? '✖' : warning.severity === 'warning' ? '⚠' : 'ℹ';
+
+      output += `${severityIcon} ${warning.name}\n`;
+      output += `  ${warning.description}\n`;
+
+      if (warning.matchedText) {
+        output += `  Matched: "${warning.matchedText}"\n`;
+      }
+
+      if (warning.suggestion) {
+        output += `  Suggestion: ${warning.suggestion}\n`;
+      }
+
+      output += '\n';
+    });
+
+    if (dismissible) {
+      output += 'Press Esc to dismiss';
+    }
+
+    mockOutput = output;
+  }
+  // Special handling for WarningPanel component
+  else if (componentType === 'WarningPanel') {
+    const props = elementProps;
+    const warnings = props?.warnings || [];
+
+    // If no warnings, return empty string
+    if (warnings.length === 0) {
+      mockOutput = '';
+      return {
+        lastFrame: () => mockOutput,
+        frames: [mockOutput],
+        stdin: { write: jest.fn() },
+        rerender: jest.fn(),
+        unmount: jest.fn(),
+        cleanup: jest.fn(),
+      };
+    }
+
+    // Initialize state
+    let showDetails = false;
+    let selectedWarningIndex = 0;
+
+    // Create mock for toggling view
+    const getOutput = () => {
+      if (showDetails) {
+        // Detailed view
+        let output = `${warnings.length} issue${warnings.length === 1 ? '' : 's'} detected\n\n`;
+
+        warnings.forEach((warning, index) => {
+          const isSelected = index === selectedWarningIndex;
+          output += `${isSelected ? '▶' : '  '} ${warning.name}\n`;
+
+          if (isSelected) {
+            output += `    ${warning.description}\n`;
+
+            if (warning.matchedText) {
+              output += `    Matched: "${warning.matchedText}"\n`;
+            }
+
+            if (warning.suggestion) {
+              output += `    Suggestion: ${warning.suggestion}\n`;
+            }
+          }
+
+          output += '\n';
+        });
+
+        output += '↑/↓: Navigate | Esc: Back | D: Dismiss all | P: Permanently dismiss pattern';
+        return output;
+      } else {
+        // Summary view
+        let output = `⚠ ${warnings.length} issue${warnings.length === 1 ? '' : 's'} detected in commit message\n\n`;
+        output += 'Enter: Show details | Esc: Dismiss | D: Dismiss all';
+        return output;
+      }
+    };
+
+    // Initial output
+    mockOutput = getOutput();
+
+    // Handle keyboard input
+    return {
+      lastFrame: () => getOutput(),
+      frames: [mockOutput],
+      stdin: {
+        write: (input) => {
+          // Toggle details with Enter
+          if (input === '\r') {
+            showDetails = !showDetails;
+          }
+          // Navigate with arrow keys
+          else if (input === '\u001B[A' && showDetails) {
+            // Up arrow
+            selectedWarningIndex =
+              selectedWarningIndex > 0 ? selectedWarningIndex - 1 : warnings.length - 1;
+          } else if (input === '\u001B[B' && showDetails) {
+            // Down arrow
+            selectedWarningIndex =
+              selectedWarningIndex < warnings.length - 1 ? selectedWarningIndex + 1 : 0;
+          }
+          // Dismiss warnings
+          else if (input === 'd') {
+            if (props.onDismiss) props.onDismiss();
+          }
+          // Permanently dismiss pattern
+          else if (input === 'p' && showDetails) {
+            if (props.onDismissPattern)
+              props.onDismissPattern(warnings[selectedWarningIndex].patternId);
+          }
+          // Handle escape key
+          else if (input === '\u001B') {
+            if (showDetails) {
+              showDetails = false;
+            } else if (props.onDismiss) {
+              props.onDismiss();
+            }
+          }
+
+          // Update output
+          mockOutput = getOutput();
+        },
+      },
+      rerender: jest.fn(),
+      unmount: jest.fn(),
+      cleanup: jest.fn(),
+    };
   }
   // Use StagedFilesList output as default for unhandled components
   else {

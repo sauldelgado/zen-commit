@@ -8,6 +8,9 @@ import MessageValidator from './MessageValidator';
 import ValidationSummary from './ValidationSummary';
 import QualityIndicator from './QualityIndicator';
 import CharacterCounter from './CharacterCounter';
+import WarningPanel from './WarningPanel';
+import { createPatternMatcher, PatternMatcher } from '../../core/patterns/pattern-matcher';
+import { createWarningManager } from '../../core/patterns/warning-manager';
 import { useMessageValidation } from '../hooks/useMessageValidation';
 
 export interface CommitMessageInputProps {
@@ -22,6 +25,7 @@ export interface CommitMessageInputProps {
   showSuggestions?: boolean;
   showFeedback?: boolean;
   feedbackExpanded?: boolean;
+  patternMatcher?: PatternMatcher;
 }
 
 /**
@@ -39,8 +43,18 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   showSuggestions = false,
   showFeedback = false,
   feedbackExpanded = false,
+  patternMatcher,
 }) => {
   const [focusedField, setFocusedField] = useState<'subject' | 'body'>('subject');
+  const [showWarnings, setShowWarnings] = useState(true);
+
+  // Create/use pattern matcher and warning manager
+  const defaultPatternMatcher = React.useMemo(
+    () => createPatternMatcher({ includeBuiltIn: true }),
+    [],
+  );
+  const effectivePatternMatcher = patternMatcher || defaultPatternMatcher;
+  const warningManager = React.useMemo(() => createWarningManager(), []);
 
   // Get validation result
   const validation = useMessageValidation(value, {
@@ -48,6 +62,26 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
     provideSuggestions: showSuggestions,
     subjectLengthLimit: subjectLimit,
   });
+
+  // Analyze message for patterns when it changes
+  React.useEffect(() => {
+    const analysis = effectivePatternMatcher.analyzeMessage(value);
+    warningManager.setWarnings(analysis.matches);
+  }, [value, effectivePatternMatcher, warningManager]);
+
+  // Get current warnings
+  const currentWarnings = warningManager.getWarnings();
+
+  // Handle warning dismissal
+  const handleDismissWarnings = () => {
+    setShowWarnings(false);
+  };
+
+  // Handle permanent pattern dismissal
+  const handleDismissPattern = (patternId: string) => {
+    warningManager.persistentlyDismissPattern(patternId);
+    effectivePatternMatcher.disablePattern(patternId);
+  };
 
   const lines = value.split('\n');
   const subject = lines[0] || '';
@@ -127,6 +161,17 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
           </Box>
         )}
 
+        {/* Show warning panel when there are warnings */}
+        {showWarnings && currentWarnings.length > 0 && (
+          <Box marginTop={1}>
+            <WarningPanel
+              warnings={currentWarnings}
+              onDismiss={handleDismissWarnings}
+              onDismissPattern={handleDismissPattern}
+            />
+          </Box>
+        )}
+
         <Box marginTop={1}>
           <Text dimColor>Press Enter to submit, Esc to cancel</Text>
         </Box>
@@ -201,6 +246,17 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
               subjectLengthLimit={subjectLimit}
             />
           )}
+        </Box>
+      )}
+
+      {/* Show warning panel when there are warnings */}
+      {showWarnings && currentWarnings.length > 0 && (
+        <Box marginTop={1}>
+          <WarningPanel
+            warnings={currentWarnings}
+            onDismiss={handleDismissWarnings}
+            onDismissPattern={handleDismissPattern}
+          />
         </Box>
       )}
 

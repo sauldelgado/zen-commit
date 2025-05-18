@@ -65,6 +65,27 @@ jest.mock('@ui/components/CharacterCounter', () => {
   };
 });
 
+jest.mock('@ui/components/WarningPanel', () => {
+  return function MockWarningPanel({
+    warnings,
+    onDismiss,
+  }: {
+    warnings: any[];
+    onDismiss: () => void;
+    onDismissPattern?: (patternId: string) => void;
+  }) {
+    if (warnings.length === 0) {
+      return null;
+    }
+    return (
+      <div data-testid="warning-panel">
+        {warnings.length} issue{warnings.length === 1 ? '' : 's'} detected in commit message
+        <button onClick={onDismiss}>Dismiss All</button>
+      </div>
+    );
+  };
+});
+
 jest.mock('@ui/hooks/useMessageValidation', () => {
   return jest.fn().mockReturnValue({
     isValid: true,
@@ -73,8 +94,58 @@ jest.mock('@ui/hooks/useMessageValidation', () => {
     isSubjectTooLong: false,
     isConventionalCommit: true,
     suggestions: [],
+    errors: [],
+    warnings: [],
+    patternMatches: [],
   });
 });
+
+jest.mock(
+  '../../core/patterns/pattern-matcher',
+  () => ({
+    createPatternMatcher: jest.fn().mockReturnValue({
+      analyzeMessage: jest.fn().mockReturnValue({
+        matches: [],
+        hasIssues: false,
+      }),
+      getPatterns: jest.fn(),
+      disablePattern: jest.fn(),
+      enablePattern: jest.fn(),
+      addPattern: jest.fn(),
+      getPatternsInText: jest.fn(),
+    }),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '../../core/patterns/warning-manager',
+  () => {
+    const createMockWarningManager = jest.fn().mockImplementation(() => {
+      let warnings: any[] = [];
+
+      return {
+        setWarnings: jest.fn((newWarnings: any[]) => {
+          warnings = newWarnings;
+        }),
+        getWarnings: jest.fn(() => warnings),
+        dismissWarning: jest.fn(),
+        dismissAllWarnings: jest.fn(),
+        persistentlyDismissPattern: jest.fn(),
+        removePersistentDismissal: jest.fn(),
+        isPermanentlyDismissed: jest.fn().mockReturnValue(false),
+        reset: jest.fn(),
+        createSnapshot: jest.fn(),
+        restoreSnapshot: jest.fn(),
+      };
+    });
+
+    return {
+      createWarningManager: createMockWarningManager,
+    };
+  },
+  { virtual: true },
+);
 
 describe('CommitMessageInput Component', () => {
   it('should render the commit message input field', () => {
@@ -248,6 +319,42 @@ describe('CommitMessageInput Component', () => {
 
       // Test passes if the component renders without errors
       expect(true).toBe(true);
+    });
+
+    it('should display warning panel when pattern matches are found', () => {
+      const mockPatternMatcher = {
+        analyzeMessage: jest.fn().mockReturnValue({
+          matches: [
+            {
+              patternId: 'wip-commit',
+              name: 'Work In Progress',
+              description: 'Avoid WIP commits',
+              severity: 'warning',
+              category: 'best-practices',
+              index: 0,
+              length: 3,
+              matchedText: 'WIP',
+            },
+          ],
+          hasIssues: true,
+        }),
+        getPatterns: jest.fn(),
+        disablePattern: jest.fn(),
+        enablePattern: jest.fn(),
+        addPattern: jest.fn(),
+        getPatternsInText: jest.fn(),
+      };
+
+      const { lastFrame } = render(
+        <CommitMessageInput
+          value="WIP: Work in progress commit"
+          onChange={() => {}}
+          patternMatcher={mockPatternMatcher}
+        />,
+      );
+
+      // Should show the warning panel
+      expect(lastFrame()).toContain('issue detected');
     });
   });
 });
