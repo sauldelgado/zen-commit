@@ -90,6 +90,7 @@ describe('ValidationSummary Component', () => {
       breaking: false,
       description: 'add new feature',
     },
+    patternMatches: [],
   };
 
   const badValidation: ValidationResult = {
@@ -107,6 +108,20 @@ describe('ValidationSummary Component', () => {
     isSubjectTooLong: true,
     isConventionalCommit: false,
     conventionalParts: null,
+    patternMatches: [
+      {
+        patternId: 'long-first-line',
+        name: 'Long First Line',
+        description: 'First line should be 72 characters or less',
+        severity: 'warning',
+        category: 'formatting',
+        index: 0,
+        length: 81,
+        matchedText:
+          'This is a very long subject line that exceeds the recommended length for a good commit message',
+        suggestion: 'Keep the first line short and concise (50-72 characters)',
+      },
+    ],
   };
 
   it('should display overall status for a good validation', () => {
@@ -162,6 +177,7 @@ describe('ValidationSummary Component', () => {
       errors: ['Error'],
       warnings: ['Warning'],
       suggestions: ['Suggestion'],
+      patternMatches: [],
     };
 
     // Multiple errors, warnings, suggestions
@@ -171,6 +187,7 @@ describe('ValidationSummary Component', () => {
       errors: ['Error 1', 'Error 2'],
       warnings: ['Warning 1', 'Warning 2'],
       suggestions: ['Suggestion 1', 'Suggestion 2'],
+      patternMatches: [],
     };
 
     render(<ValidationSummary validation={singleIssuesValidation} />);

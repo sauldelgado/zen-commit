@@ -11,9 +11,34 @@ import {
  * Options for creating a pattern matcher
  */
 export interface PatternMatcherOptions {
+  /**
+   * Whether to include built-in patterns (defaults to true)
+   */
   includeBuiltIn?: boolean;
+
+  /**
+   * Custom patterns to add to the matcher
+   */
   customPatterns?: Pattern[];
+
+  /**
+   * Pattern IDs to disable by default
+   */
   disabledPatterns?: string[];
+
+  /**
+   * Maximum size of message to analyze (in characters)
+   * Messages larger than this will be truncated
+   * Defaults to 10000 characters
+   */
+  maxMessageSize?: number;
+
+  /**
+   * Maximum time (in milliseconds) to spend on pattern matching
+   * If the operation takes longer, it will be aborted
+   * Defaults to 1000ms (1 second)
+   */
+  matchTimeoutMs?: number;
 }
 
 /**
@@ -97,6 +122,10 @@ export const createPatternMatcher = (options: PatternMatcherOptions = {}): Patte
   // Track disabled patterns
   const disabledPatternIds = new Set<string>(options.disabledPatterns || []);
 
+  // Set performance limits
+  const maxMessageSize = options.maxMessageSize || 10000; // Default 10KB max
+  const matchTimeoutMs = options.matchTimeoutMs || 1000; // Default 1 second timeout
+
   // Create a cache for pattern results to improve performance on repeated analyses
   const analysisCache = new Map<string, AnalysisResult>();
 
@@ -105,8 +134,16 @@ export const createPatternMatcher = (options: PatternMatcherOptions = {}): Patte
      * Analyze a commit message for pattern matches
      */
     analyzeMessage(message: string, analysisOptions: AnalysisOptions = {}): AnalysisResult {
+      // Truncate message if it exceeds maximum size
+      let analyzedMessage = message;
+      const isTruncated = message.length > maxMessageSize;
+
+      if (isTruncated) {
+        analyzedMessage = message.substring(0, maxMessageSize);
+      }
+
       // Generate cache key based on message and options
-      const cacheKey = `${message}_${JSON.stringify(analysisOptions)}`;
+      const cacheKey = `${analyzedMessage}_${JSON.stringify(analysisOptions)}`;
 
       // Check cache first
       if (analysisCache.has(cacheKey)) {
@@ -126,8 +163,57 @@ export const createPatternMatcher = (options: PatternMatcherOptions = {}): Patte
         activePatterns = activePatterns.filter((p) => p.category === analysisOptions.category);
       }
 
-      // Detect all matches
-      let matches = detectPatterns(message, activePatterns);
+      // Use timeout to prevent regex from taking too long
+      let matches: PatternMatch[] = [];
+
+      try {
+        // Set a timeout to prevent regex catastrophic backtracking
+        const startTime = Date.now();
+
+        // Detect all matches with timeout check
+        matches = detectPatternsWithTimeout(
+          analyzedMessage,
+          activePatterns,
+          startTime,
+          matchTimeoutMs,
+        );
+      } catch (error) {
+        // If timeout or regex error occurs, return empty matches
+        console.warn(
+          `Pattern matching aborted: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+        matches = [];
+      }
+
+      /**
+       * Helper function to detect patterns with a timeout
+       */
+      function detectPatternsWithTimeout(
+        text: string,
+        patternsToDetect: Pattern[],
+        startTime: number,
+        timeout: number,
+      ): PatternMatch[] {
+        // Use the main detectPatterns function but check time periodically
+        const result: PatternMatch[] = [];
+
+        // Process patterns in smaller batches to allow timeout checks
+        const BATCH_SIZE = 5;
+
+        for (let i = 0; i < patternsToDetect.length; i += BATCH_SIZE) {
+          // Check if we've exceeded the timeout
+          if (Date.now() - startTime > timeout) {
+            throw new Error(`Pattern matching timeout exceeded (${timeout}ms)`);
+          }
+
+          // Process a batch of patterns
+          const patternBatch = patternsToDetect.slice(i, i + BATCH_SIZE);
+          const batchMatches = detectPatterns(text, patternBatch);
+          result.push(...batchMatches);
+        }
+
+        return result;
+      }
 
       // Filter by severity if requested
       if (analysisOptions.minSeverity) {

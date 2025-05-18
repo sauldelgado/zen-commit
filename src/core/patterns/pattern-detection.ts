@@ -1,15 +1,37 @@
 /**
  * Severity levels for patterns
+ * - info: Informational issues that are style preferences but don't affect commit quality
+ * - warning: Issues that may indicate problems but aren't critical
+ * - error: Critical issues that should be fixed before committing
  */
 export type PatternSeverity = 'info' | 'warning' | 'error';
 
 /**
- * Pattern categories
+ * Pattern categories for organizing patterns into logical groups
+ * - best-practices: Patterns related to general Git best practices
+ * - formatting: Patterns related to message structure and formatting
+ * - style: Patterns related to writing style and language
+ * - workflow: Patterns related to Git workflow and process
+ * - content: Patterns related to the actual content of the message
  */
 export type PatternCategory = 'best-practices' | 'formatting' | 'style' | 'workflow' | 'content';
 
 /**
  * Pattern definition interface
+ *
+ * A pattern represents a rule or convention that commit messages should follow.
+ * Each pattern includes a regex to detect violations and metadata to help users
+ * understand and fix the issue.
+ *
+ * @property id - Unique identifier for the pattern
+ * @property name - Human-readable name
+ * @property description - Detailed description of what the pattern checks for
+ * @property regex - Regular expression used to detect the pattern in text
+ * @property severity - How serious the issue is (info, warning, error)
+ * @property category - Logical grouping for the pattern
+ * @property suggestion - Optional advice on how to fix the issue
+ * @property contextualExamples - Optional examples of good and bad messages
+ * @property version - Optional version string for tracking pattern changes
  */
 export interface Pattern {
   id: string;
@@ -28,6 +50,20 @@ export interface Pattern {
 
 /**
  * Pattern match result interface
+ *
+ * Represents an instance where a pattern was detected in text.
+ * Contains information about both the pattern and the specific match found.
+ *
+ * @property patternId - ID of the matched pattern
+ * @property name - Name of the matched pattern
+ * @property description - Description of the pattern
+ * @property severity - Severity level of the pattern
+ * @property category - Category of the pattern
+ * @property index - Starting character position of the match in the text
+ * @property length - Length of the matched text
+ * @property matchedText - The actual text that matched the pattern
+ * @property suggestion - Optional suggestion for fixing the issue
+ * @property captures - Optional capture groups from the regex match
  */
 export interface PatternMatch {
   patternId: string;

@@ -7,6 +7,7 @@ export interface MessageValidatorProps {
   conventionalCommit?: boolean;
   showSuggestions?: boolean;
   subjectLengthLimit?: number;
+  detectPatterns?: boolean;
 }
 
 /**
@@ -17,12 +18,14 @@ const MessageValidator: React.FC<MessageValidatorProps> = ({
   conventionalCommit = false,
   showSuggestions = false,
   subjectLengthLimit = 50,
+  detectPatterns = true,
 }) => {
   // Create validation options
   const options: ValidationOptions = {
     conventionalCommit,
     provideSuggestions: showSuggestions,
     subjectLengthLimit,
+    detectPatterns,
   };
 
   // Validate message
@@ -130,6 +133,28 @@ const MessageValidator: React.FC<MessageValidatorProps> = ({
           >
             {Math.round(validation.qualityScore * 100)}%
           </Text>
+        </Box>
+      )}
+
+      {/* Pattern matches */}
+      {detectPatterns && validation.patternMatches.length > 0 && (
+        <Box flexDirection="column" marginTop={1}>
+          <Text color="magenta">Patterns detected:</Text>
+          {validation.patternMatches.map((match, index) => (
+            <Box key={index} marginLeft={2}>
+              <Text
+                color={
+                  match.severity === 'error'
+                    ? 'red'
+                    : match.severity === 'warning'
+                      ? 'yellow'
+                      : 'blue'
+                }
+              >
+                - {match.name}: {match.description}
+              </Text>
+            </Box>
+          ))}
         </Box>
       )}
     </Box>
