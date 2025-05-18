@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Box, Text } from './';
 import { useInput } from 'ink';
 import { PatternMatch } from '../../core/patterns/pattern-detection';
+import { OverrideManager } from '../../core/override-manager';
+import OverrideDialog from './OverrideDialog';
 
 export interface WarningPanelProps {
   warnings: PatternMatch[];
@@ -9,6 +11,10 @@ export interface WarningPanelProps {
   onDismissPattern: (patternId: string) => void;
   /** Optional initial state for section collapsing */
   initiallyCollapsed?: boolean;
+  /** Optional override manager for handling pattern overrides */
+  overrideManager?: OverrideManager;
+  /** Optional handler for override pattern actions */
+  onOverridePattern?: (patternId: string, reason: string, isPermanent: boolean) => void;
 }
 
 /**
@@ -19,10 +25,13 @@ const WarningPanel: React.FC<WarningPanelProps> = ({
   onDismiss,
   onDismissPattern,
   initiallyCollapsed = false,
+  overrideManager,
+  onOverridePattern,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedWarningIndex, setSelectedWarningIndex] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(initiallyCollapsed);
+  const [showOverrideDialog, setShowOverrideDialog] = useState(false);
 
   // Handle keyboard input
   useInput((input, key) => {
@@ -46,6 +55,9 @@ const WarningPanel: React.FC<WarningPanelProps> = ({
       // Permanently dismiss selected pattern
       const patternId = warnings[selectedWarningIndex].patternId;
       onDismissPattern(patternId);
+    } else if (input === 'o' && showDetails && warnings.length > 0 && onOverridePattern) {
+      // Show override dialog for selected warning
+      setShowOverrideDialog(true);
     } else if (input === 'c') {
       // Toggle collapsed state
       setIsCollapsed(!isCollapsed);
@@ -61,6 +73,21 @@ const WarningPanel: React.FC<WarningPanelProps> = ({
   // If no warnings, don't render anything
   if (warnings.length === 0) {
     return null;
+  }
+
+  // Show override dialog if active
+  if (showOverrideDialog && onOverridePattern) {
+    return (
+      <OverrideDialog
+        warning={warnings[selectedWarningIndex]}
+        onOverride={(patternId, reason, isPermanent) => {
+          onOverridePattern(patternId, reason, isPermanent);
+          setShowOverrideDialog(false);
+        }}
+        onCancel={() => setShowOverrideDialog(false)}
+        allowPermanentOverride={true}
+      />
+    );
   }
 
   // Render summary or detailed view
@@ -109,6 +136,16 @@ const WarningPanel: React.FC<WarningPanelProps> = ({
                           <Text>{warning.suggestion}</Text>
                         </Box>
                       )}
+
+                      {overrideManager && (
+                        <Box marginTop={1}>
+                          <Text dimColor>
+                            {overrideManager.isPatternOverridden(warning.patternId)
+                              ? 'This pattern is currently overridden'
+                              : 'Press O to override this warning'}
+                          </Text>
+                        </Box>
+                      )}
                     </Box>
                   )}
                 </Box>
@@ -129,6 +166,7 @@ const WarningPanel: React.FC<WarningPanelProps> = ({
               <Text>Esc: Go back to summary</Text>
               <Text>D: Dismiss all warnings temporarily</Text>
               <Text>P: Permanently dismiss this pattern</Text>
+              {onOverridePattern && <Text>O: Override this warning</Text>}
               <Text>C: Toggle collapse/expand warnings</Text>
             </Box>
           </Box>

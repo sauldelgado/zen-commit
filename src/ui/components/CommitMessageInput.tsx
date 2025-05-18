@@ -4,6 +4,7 @@ const TextInput = (props: any) => {
   return React.createElement('input', props, null);
 };
 import { Box, Text } from './';
+import { useInput } from 'ink';
 import MessageValidator from './MessageValidator';
 import ValidationSummary from './ValidationSummary';
 import QualityIndicator from './QualityIndicator';
@@ -13,6 +14,8 @@ import { createPatternMatcher, PatternMatcher } from '../../core/patterns/patter
 import { createWarningManager } from '../../core/patterns/warning-manager';
 import { useMessageValidation } from '../hooks/useMessageValidation';
 import { debounce } from '../../utils/debounce';
+import { createOverrideManager } from '../../core/override-manager';
+import OverrideList from './OverrideList';
 
 export interface CommitMessageInputProps {
   value: string;
@@ -48,6 +51,7 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
 }) => {
   const [focusedField, setFocusedField] = useState<'subject' | 'body'>('subject');
   const [showWarnings, setShowWarnings] = useState(true);
+  const [showOverrideList, setShowOverrideList] = useState(false);
 
   // Create/use pattern matcher and warning manager
   const defaultPatternMatcher = React.useMemo(
@@ -56,6 +60,9 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   );
   const effectivePatternMatcher = patternMatcher || defaultPatternMatcher;
   const warningManager = React.useMemo(() => createWarningManager(), []);
+
+  // Create override manager
+  const overrideManager = React.useMemo(() => createOverrideManager(), []);
 
   // Get validation result
   const validation = useMessageValidation(value, {
@@ -67,10 +74,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   // Create a debounced analyze function (300ms delay)
   const debouncedAnalyze = useCallback(
     debounce((text: string) => {
-      const analysis = effectivePatternMatcher.analyzeMessage(text);
+      // Get patterns for analysis, filtering out overridden patterns
+      const patterns = effectivePatternMatcher
+        .getPatterns()
+        .filter((pattern) => !overrideManager.isPatternOverridden(pattern.id));
+
+      // Use only non-overridden patterns for analysis
+      const analysis = effectivePatternMatcher.analyzeMessage(text, { patterns });
       warningManager.setWarnings(analysis.matches);
     }, 300),
-    [effectivePatternMatcher, warningManager],
+    [effectivePatternMatcher, warningManager, overrideManager],
   );
 
   // Analyze message for patterns when it changes (debounced)
@@ -81,6 +94,19 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   // Get current warnings
   const currentWarnings = warningManager.getWarnings();
 
+  // Handle keyboard shortcuts
+  useInput(
+    useCallback(
+      (input, key) => {
+        // Toggle override list with Ctrl+O
+        if (input === 'o' && key.ctrl) {
+          setShowOverrideList(!showOverrideList);
+        }
+      },
+      [showOverrideList],
+    ),
+  );
+
   // Handle warning dismissal
   const handleDismissWarnings = () => {
     setShowWarnings(false);
@@ -90,6 +116,32 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
   const handleDismissPattern = (patternId: string) => {
     warningManager.persistentlyDismissPattern(patternId);
     effectivePatternMatcher.disablePattern(patternId);
+  };
+
+  // Handle overriding a pattern
+  const handleOverridePattern = (patternId: string, reason: string, isPermanent: boolean) => {
+    // Add override
+    overrideManager.overridePattern(patternId, reason);
+
+    // If permanent, also disable the pattern in the matcher
+    if (isPermanent) {
+      effectivePatternMatcher.disablePattern(patternId);
+    }
+
+    // Refresh warnings (this will filter out the overridden one)
+    warningManager.dismissWarning(patternId);
+
+    // Re-analyze message
+    debouncedAnalyze(value);
+  };
+
+  // Handle removing an override
+  const handleRemoveOverride = (patternId: string) => {
+    overrideManager.removeOverride(patternId);
+    effectivePatternMatcher.enablePattern(patternId);
+
+    // Re-analyze to show any new warnings
+    debouncedAnalyze(value);
   };
 
   const lines = value.split('\n');
@@ -116,10 +168,6 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
       onSubmit(value);
     }
   };
-
-  // For keyboard navigation, we would use useInput from ink
-  // but we're adapting our implementation to match the project structure
-  // Navigation will be handled by the parent component
 
   if (!showSubjectBodySeparation) {
     return (
@@ -170,6 +218,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
           </Box>
         )}
 
+        {/* Show override list when requested */}
+        {showOverrideList && (
+          <Box marginTop={1}>
+            <OverrideList
+              overrides={overrideManager.getOverrides()}
+              onRemoveOverride={handleRemoveOverride}
+            />
+          </Box>
+        )}
+
         {/* Show warning panel when there are warnings */}
         {showWarnings && currentWarnings.length > 0 && (
           <Box marginTop={1}>
@@ -177,12 +235,14 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
               warnings={currentWarnings}
               onDismiss={handleDismissWarnings}
               onDismissPattern={handleDismissPattern}
+              overrideManager={overrideManager}
+              onOverridePattern={handleOverridePattern}
             />
           </Box>
         )}
 
         <Box marginTop={1}>
-          <Text dimColor>Press Enter to submit, Esc to cancel</Text>
+          <Text dimColor>Ctrl+O: Toggle overrides | Enter: Submit | Esc: Cancel</Text>
         </Box>
       </Box>
     );
@@ -258,6 +318,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
         </Box>
       )}
 
+      {/* Show override list when requested */}
+      {showOverrideList && (
+        <Box marginTop={1}>
+          <OverrideList
+            overrides={overrideManager.getOverrides()}
+            onRemoveOverride={handleRemoveOverride}
+          />
+        </Box>
+      )}
+
       {/* Show warning panel when there are warnings */}
       {showWarnings && currentWarnings.length > 0 && (
         <Box marginTop={1}>
@@ -265,12 +335,16 @@ const CommitMessageInput: React.FC<CommitMessageInputProps> = ({
             warnings={currentWarnings}
             onDismiss={handleDismissWarnings}
             onDismissPattern={handleDismissPattern}
+            overrideManager={overrideManager}
+            onOverridePattern={handleOverridePattern}
           />
         </Box>
       )}
 
       <Box marginTop={1}>
-        <Text dimColor>Tab: Switch fields | Enter: Submit | Esc: Cancel</Text>
+        <Text dimColor>
+          Tab: Switch fields | Ctrl+O: Toggle overrides | Enter: Submit | Esc: Cancel
+        </Text>
       </Box>
     </Box>
   );
